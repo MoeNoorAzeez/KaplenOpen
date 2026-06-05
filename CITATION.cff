@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Kaplen: AI-Powered Curriculum Content and Script Generation Platform"
+version: 1.0.0
+date-released: 2026-06-05
+url: "https://github.com/MoeNoorAzeez/KaplenOpen"
+repository-code: "https://github.com/MoeNoorAzeez/KaplenOpen"
+license: MIT
+authors:
+  - family-names: Azeez
+    given-names: MohamadAlmstafa
+    email: noonazeezino@gmail.com
+    country: IQ
+abstract: >
+  Kaplen is a production B2B SaaS platform for converting curriculum
+  materials and written content into structured, spoken-word YouTube
+  scripts. Built in 32 days at a tooling cost of USD 500 using
+  operator-directed AI development with no code written directly.
+  Described in the practitioner study "Engineering Without Coding:
+  A Practitioner Study of Operator-Driven AI Development" (Azeez, 2026).
+keywords:
+  - llm
+  - education
+  - youtube
+  - arabic
+  - flask
+  - saas
+  - script-generation
+  - operator-driven-development
+  - vibe-coding
+preferred-citation:
+  type: article
+  title: "Engineering Without Coding: A Practitioner Study of Operator-Driven AI Development"
+  authors:
+    - family-names: Azeez
+      given-names: MohamadAlmstafa
+  year: 2026
+  url: "https://github.com/MoeNoorAzeez/KaplenOpen"

@@ -9,6 +9,7 @@
 [![Flask](https://img.shields.io/badge/Flask-3.x-lightgrey.svg)](https://flask.palletsprojects.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-blue.svg)](https://postgresql.org)
 [![Provider Agnostic](https://img.shields.io/badge/LLM-Anthropic%20%7C%20OpenAI%20%7C%20Ollama-purple.svg)](#switching-llm-providers)
+[![Tests](https://github.com/MoeNoorAzeez/KaplenOpen/actions/workflows/ci.yml/badge.svg)](https://github.com/MoeNoorAzeez/KaplenOpen/actions/workflows/ci.yml)
 
 [**Quick Start**](#quick-start) · [**API Reference**](docs/SPEC.md) · [**Architecture**](docs/ARCHITECTURE.md) · [**Deploy**](docs/DEPLOYMENT.md)
 
@@ -86,7 +87,7 @@ A clean Flask API with a provider-agnostic LLM abstraction, 12 Postgres tables (
 ### 1 — Clone and install
 
 ```bash
-git clone https://github.com/your-org/kaplen.git
+git clone https://github.com/MoeNoorAzeez/KaplenOpen.git
 cd kaplen
 python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
@@ -242,33 +243,41 @@ The platform ships with the Iraqi Ministry of Education curriculum pre-registere
 ## Project Structure
 
 ```
-kaplen/
-├── app.py                       # entry point and route wiring
-├── api_endpoints.py             # all 45 routes
-├── config.py                    # env-var config
+KaplenOpen/
+├── kaplen/                      # Python package
+│   ├── __init__.py
+│   ├── app.py                   # entry point and route wiring
+│   ├── api_endpoints.py         # all 45 routes
+│   ├── config.py                # env-var config
+│   └── features/
+│       ├── llm_provider.py      # provider abstraction (Anthropic / OpenAI-compat)
+│       ├── auth.py              # JWT helpers and decorators
+│       ├── database.py          # Postgres — 12 tables, auto-init on boot
+│       ├── script_generator.py  # curriculum script pipeline
+│       ├── long_form_generator.py  # 1hr / 3hr streaming generator
+│       ├── essay_generator.py   # article → YouTube script
+│       ├── podcast_generator.py # podcast outlines
+│       ├── study_tips.py        # motivational / study-skill scripts
+│       ├── callaway.py          # narrative beats and direction
+│       ├── youtube_packager.py  # hook / title / thumbnail prompts
+│       ├── validator.py         # curriculum coverage scoring
+│       ├── payments.py          # Stripe subscription checks
+│       ├── analytics.py         # per-teacher metrics
+│       ├── dedup.py             # dual-hash deduplication
+│       └── ...
 │
-├── features/
-│   ├── llm_provider.py          # provider abstraction (Anthropic / OpenAI-compat)
-│   ├── auth.py                  # JWT helpers and decorators
-│   ├── database.py              # Postgres — 12 tables, auto-init on boot
-│   ├── script_generator.py      # curriculum script pipeline
-│   ├── long_form_generator.py   # 1hr / 3hr streaming generator
-│   ├── essay_generator.py       # article → YouTube script
-│   ├── podcast_generator.py     # podcast outlines
-│   ├── study_tips.py            # motivational / study-skill scripts
-│   ├── callaway.py              # narrative beats and direction
-│   ├── youtube_packager.py      # hook / title / thumbnail prompts
-│   ├── validator.py             # curriculum coverage scoring
-│   ├── payments.py              # Stripe subscription checks
-│   ├── analytics.py             # per-teacher metrics
-│   ├── dedup.py                 # dual-hash deduplication
-│   └── ...
+├── docs/                        # documentation
+│   ├── ARCHITECTURE.md
+│   ├── DEPLOYMENT.md
+│   ├── SPEC.md
+│   └── CURRICULUM_SPEC.md
 │
 ├── curricula/
 │   └── registry.json            # curriculum definitions
 │
 ├── dashboard.html               # teacher dashboard UI
 ├── essay_generator.html         # Script Studio UI
+│
 ├── tests/
 │   ├── conftest.py
 │   └── test_smoke.py            # 24 tests — no live DB/LLM required
