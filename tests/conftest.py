@@ -47,13 +47,12 @@ def flask_app():
 
     with patch('psycopg2.connect', return_value=mock_conn):
         # Evict any previously imported app modules so env vars take effect.
-        for key in [k for k in sys.modules if k in ('app', 'api_endpoints', 'config')
-                    or k.startswith('features')]:
+        for key in [k for k in sys.modules if k.startswith('kaplen')]:
             del sys.modules[key]
 
-        import app as kaplen
-        kaplen.app.config['TESTING'] = True
-        yield kaplen.app
+        import kaplen.app as kaplen_module
+        kaplen_module.app.config['TESTING'] = True
+        yield kaplen_module.app
 
 
 @pytest.fixture
