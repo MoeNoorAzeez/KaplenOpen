@@ -10,7 +10,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-blue.svg)](https://postgresql.org)
 [![Provider Agnostic](https://img.shields.io/badge/LLM-Anthropic%20%7C%20OpenAI%20%7C%20Ollama-purple.svg)](#switching-llm-providers)
 
-[**Quick Start**](#quick-start) · [**API Reference**](SPEC.md) · [**Architecture**](ARCHITECTURE.md) · [**Deploy**](DEPLOYMENT.md)
+[**Quick Start**](#quick-start) · [**API Reference**](docs/SPEC.md) · [**Architecture**](docs/ARCHITECTURE.md) · [**Deploy**](docs/DEPLOYMENT.md)
 
 </div>
 
@@ -206,7 +206,7 @@ curl -X POST http://localhost:5000/api/essay/generate \
   }'
 ```
 
-Full schema for every endpoint, request body, and response: [SPEC.md](SPEC.md)
+Full schema for every endpoint, request body, and response: [docs/SPEC.md](docs/SPEC.md)
 
 ---
 
@@ -235,7 +235,7 @@ Register any subject hierarchy by editing `curricula/registry.json`:
 }
 ```
 
-The platform ships with the Iraqi Ministry of Education curriculum pre-registered. Full schema and validation rules: [SPEC.md § Curriculum Registry](SPEC.md).
+The platform ships with the Iraqi Ministry of Education curriculum pre-registered. Full schema and validation rules: [docs/SPEC.md § Curriculum Registry](docs/SPEC.md).
 
 ---
 
@@ -296,9 +296,9 @@ pytest
 | Target | Guide |
 |---|---|
 | Local | This README |
-| Docker Compose | [DEPLOYMENT.md § Docker](DEPLOYMENT.md) |
-| Heroku | [DEPLOYMENT.md § Heroku](DEPLOYMENT.md) |
-| AWS EC2 + Nginx + RDS | [DEPLOYMENT.md § EC2](DEPLOYMENT.md) |
+| Docker Compose | [docs/DEPLOYMENT.md § Docker](docs/DEPLOYMENT.md) |
+| Heroku | [docs/DEPLOYMENT.md § Heroku](docs/DEPLOYMENT.md) |
+| AWS EC2 + Nginx + RDS | [docs/DEPLOYMENT.md § EC2](docs/DEPLOYMENT.md) |
 
 The production system runs on EC2 t3.small with PostgreSQL on RDS, S3 for curriculum storage, and Nginx as a reverse proxy. Nginx configuration for SSE (streaming) responses is included in the deploy guide.
 
@@ -309,9 +309,9 @@ The production system runs on EC2 t3.small with PostgreSQL on RDS, S3 for curric
 | File | What's in it |
 |---|---|
 | [OVERVIEW.md](OVERVIEW.md) | Platform overview — education, script studio, research background |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Layer diagram, all 34 modules, LLM abstraction, DB schema |
-| [DEPLOYMENT.md](DEPLOYMENT.md) | Full deploy guides — local, Docker, Heroku, EC2 |
-| [SPEC.md](SPEC.md) | Every endpoint, every DB table, SSE protocol, error codes |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Layer diagram, all 34 modules, LLM abstraction, DB schema |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Full deploy guides — local, Docker, Heroku, EC2 |
+| [docs/SPEC.md](docs/SPEC.md) | Every endpoint, every DB table, SSE protocol, error codes |
 
 ---
 
