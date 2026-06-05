@@ -9,7 +9,6 @@
 [![Flask](https://img.shields.io/badge/Flask-3.x-lightgrey.svg)](https://flask.palletsprojects.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-blue.svg)](https://postgresql.org)
 [![Provider Agnostic](https://img.shields.io/badge/LLM-Anthropic%20%7C%20OpenAI%20%7C%20Ollama-purple.svg)](#switching-llm-providers)
-[![Tests](https://github.com/MoeNoorAzeez/KaplenOpen/actions/workflows/ci.yml/badge.svg)](https://github.com/MoeNoorAzeez/KaplenOpen/actions/workflows/ci.yml)
 
 [**Quick Start**](#quick-start) · [**API Reference**](docs/SPEC.md) · [**Architecture**](docs/ARCHITECTURE.md) · [**Deploy**](docs/DEPLOYMENT.md)
 
