@@ -2,7 +2,7 @@
 """
 app.py — Kaplen Content Generation Platform
 Pure orchestrator. Does three things only:
-  1. Instantiate infrastructure (Anthropic, S3, DB)
+  1. Instantiate infrastructure (LLM provider, S3, DB)
   2. Wire all feature classes
   3. Register all routes via api_endpoints.register_all_routes()
 """
@@ -11,7 +11,6 @@ import os
 import logging
 
 import boto3
-import anthropic
 from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -37,15 +36,16 @@ CORS(app)
 # INFRASTRUCTURE
 # ============================================================================
 
-anthropic_client = anthropic.Anthropic(api_key=config.ANTHROPIC_API_KEY)
-s3_client        = boto3.client(
+from features.llm_provider import get_provider
+
+llm_provider = get_provider()
+s3_client    = boto3.client(
     's3',
     region_name=config.AWS_REGION,
     aws_access_key_id=config.AWS_ACCESS_KEY_ID,
     aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY,
 )
 
-MODEL  = config.ANTHROPIC_MODEL
 BUCKET = config.S3_BUCKET
 
 # ============================================================================
@@ -75,9 +75,9 @@ dedup = Dedup()
 curriculum_registry = CurriculumRegistry(config.CURRICULUM_REGISTRY_PATH)
 curriculum_loader   = CurriculumLoader(curriculum_registry, s3_client)
 data_loader         = DataLoader(s3_client, BUCKET)
-callaway            = CallawayFramework(anthropic_client, MODEL)
-packager            = YoutubePackager(anthropic_client, MODEL)
-validator           = ContentValidator(anthropic_client, MODEL)
+callaway            = CallawayFramework(llm_provider)
+packager            = YoutubePackager(llm_provider)
+validator           = ContentValidator(llm_provider)
 script_store        = ScriptStore(db)
 yt_store            = YtAnalyticsStore(db)
 metrics             = MetricsEngine(db)
@@ -86,10 +86,10 @@ metrics             = MetricsEngine(db)
 scripts_cache: dict = {}  # {script_id: script_data} — session-scoped
 
 script_generator     = ScriptGenerator(
-    anthropic_client, MODEL, data_loader, callaway, packager, validator, dedup,
+    llm_provider, data_loader, callaway, packager, validator, dedup,
     metrics=metrics, curriculum_loader=curriculum_loader,
 )
-study_tips_generator = StudyTipsGenerator(anthropic_client, MODEL, callaway, packager, dedup)
+study_tips_generator = StudyTipsGenerator(llm_provider, callaway, packager, dedup)
 docx_exporter        = DocxExporter(script_store, scripts_cache)
 
 # ============================================================================
@@ -116,8 +116,7 @@ register_all_routes(
     metrics              = metrics,
     docx_exporter        = docx_exporter,
     scripts_cache        = scripts_cache,
-    anthropic_client     = anthropic_client,
-    model                = MODEL,
+    llm_provider         = llm_provider,
     validator            = validator,
     dedup                = dedup,
     s3_client            = s3_client,
@@ -131,7 +130,7 @@ register_all_routes(
 
 if __name__ == '__main__':
     logger.info("Starting Kaplen Content Generation Platform")
-    logger.info(f"Model  : {MODEL}")
+    logger.info(f"LLM    : {llm_provider.model_name}")
     logger.info(f"Bucket : {BUCKET}")
     logger.info(f"DB     : {db.database} @ {db.host}")
     app.run(host='0.0.0.0', port=5000, debug=config.FLASK_ENV == 'development')

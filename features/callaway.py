@@ -13,9 +13,8 @@ logger = logging.getLogger(__name__)
 
 class CallawayFramework:
 
-    def __init__(self, client, model):
-        self.client = client
-        self.model = model
+    def __init__(self, provider):
+        self.provider = provider
 
     def generate_story_direction(self, topic: str, curriculum_content: str) -> str:
         """
@@ -40,12 +39,9 @@ This is the emotional destination — everything else in the video builds toward
 
 Write the ideal final line now:"""
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=100,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            return message.content[0].text.strip()
+            return self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=100
+            ).strip()
 
         except Exception as e:
             logger.error(f"Direction generation error: {e}")
@@ -73,12 +69,9 @@ The lens must:
 
 Write your unique lens now:"""
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=100,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            return message.content[0].text.strip()
+            return self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=100
+            ).strip()
 
         except Exception as e:
             logger.error(f"Lens generation error: {e}")
@@ -116,13 +109,9 @@ Return as JSON array only (no preamble):
 
 Generate {num_sections} beats now:"""
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=1000,
-                messages=[{"role": "user", "content": prompt}]
-            )
-
-            response_text = message.content[0].text.strip()
+            response_text = self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=1000
+            ).strip()
             json_match = re.search(r'\[.*\]', response_text, re.DOTALL)
             if json_match:
                 return json.loads(json_match.group())

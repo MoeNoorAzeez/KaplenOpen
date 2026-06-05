@@ -18,9 +18,8 @@ DEFAULT_QUALITY_RULES = {
 
 class ContentValidator:
 
-    def __init__(self, client, model, curriculum_registry=None):
-        self.client = client
-        self.model = model
+    def __init__(self, provider, curriculum_registry=None):
+        self.provider = provider
         self.curriculum_registry = curriculum_registry
 
     def validate_coverage(
@@ -69,13 +68,9 @@ Return ONLY a JSON object:
   "quality_assessment": "brief assessment"
 }}"""
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=200,
-                messages=[{"role": "user", "content": prompt}]
-            )
-
-            response_text = message.content[0].text.strip()
+            response_text = self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=200
+            ).strip()
             json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
 
             if json_match:

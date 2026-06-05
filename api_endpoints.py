@@ -89,8 +89,10 @@ logger = logging.getLogger(__name__)
 def register_all_routes(app, data_loader, script_generator, study_tips_generator,
                         script_store, yt_store, metrics, docx_exporter, scripts_cache,
                         long_form_gen=None, s3_client=None, bucket=None,
-                        anthropic_client=None, model=None, validator=None, dedup=None,
-                        curriculum_registry=None, curriculum_loader=None, config=None):
+                        llm_provider=None, validator=None, dedup=None,
+                        curriculum_registry=None, curriculum_loader=None, config=None,
+                        # backward-compat aliases — ignored if llm_provider is set
+                        anthropic_client=None, model=None):
     """
     Register every route with the Flask app.
 
@@ -992,8 +994,7 @@ def register_all_routes(app, data_loader, script_generator, study_tips_generator
             bucket = os.getenv('S3_BUCKET')
         
         long_form_gen = LongFormVideoGenerator(
-            client=anthropic_client,
-            model=model,
+            provider=llm_provider,
             data_loader=data_loader,
             s3_client=s3_client,
             bucket=bucket,
@@ -1223,8 +1224,7 @@ def register_all_routes(app, data_loader, script_generator, study_tips_generator
     from functools import wraps
     
     essay_gen = EssayGenerator(
-        client=anthropic_client,
-        model=model,
+        provider=llm_provider,
         validator=validator,
         dedup=dedup
     )
@@ -1623,7 +1623,7 @@ def register_all_routes(app, data_loader, script_generator, study_tips_generator
                 return jsonify({'error': 'speaker_profile, guest_profile, and episode_context required'}), 400
 
             from features.podcast_generator import PodcastOutlineGenerator
-            podcast_gen = PodcastOutlineGenerator(anthropic_client, model)
+            podcast_gen = PodcastOutlineGenerator(llm_provider)
             result = podcast_gen.generate(speaker_profile, guest_profile, episode_context)
 
             if not result.get('success'):

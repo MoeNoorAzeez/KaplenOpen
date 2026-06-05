@@ -29,10 +29,9 @@ class ScriptGenerator:
         → ContentValidator → Dedup → result dict
     """
 
-    def __init__(self, client, model, data_loader, callaway, packager, validator, dedup,
+    def __init__(self, provider, data_loader, callaway, packager, validator, dedup,
                  metrics=None, curriculum_loader=None):
-        self.client           = client
-        self.model            = model
+        self.provider         = provider
         self.data_loader      = data_loader
         self.curriculum_loader = curriculum_loader
         self.callaway         = callaway
@@ -155,12 +154,9 @@ Format: Plain text, divide into {num_sections} sections
 
 Script:"""
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=4000,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            script_content = message.content[0].text.strip()
+            script_content = self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=4000
+            ).strip()
 
             # 7. Validate
             validation = self.validator.validate_coverage(

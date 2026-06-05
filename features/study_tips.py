@@ -23,17 +23,15 @@ class StudyTipsGenerator:
     No S3 curriculum required — topic is freeform.
     """
 
-    def __init__(self, client, model, callaway, packager, dedup):
+    def __init__(self, provider, callaway, packager, dedup):
         """
         Args:
-            client:   anthropic.Anthropic instance
-            model:    model string
+            provider: features.llm_provider.LLMProvider instance
             callaway: features.callaway.CallawayFramework
             packager: features.youtube_packager.YoutubePackager
             dedup:    features.dedup.Dedup
         """
-        self.client   = client
-        self.model    = model
+        self.provider = provider
         self.callaway = callaway
         self.packager = packager
         self.dedup    = dedup
@@ -95,12 +93,9 @@ Divide into {num_sections} practical sections
 
 Script:"""
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=4000,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            script_content = message.content[0].text.strip()
+            script_content = self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=4000
+            ).strip()
 
             is_duplicate     = self.dedup.check_and_register(script_content)
             rhythm           = self.callaway.analyze_rhythm(script_content)

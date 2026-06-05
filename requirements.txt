@@ -1,4 +1,6 @@
-anthropic
+# LLM providers — install at least one
+anthropic          # for LLM_PROVIDER=anthropic (default)
+# openai           # for LLM_PROVIDER=openai (uncomment to enable)
 bcrypt
 boto3
 Flask

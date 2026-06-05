@@ -45,14 +45,12 @@ class PodcastOutlineGenerator:
     Does NOT generate a script — generates a map for natural conversation.
     """
 
-    def __init__(self, client, model):
+    def __init__(self, provider):
         """
         Args:
-            client: anthropic.Anthropic instance
-            model:  model string
+            provider: features.llm_provider.LLMProvider instance
         """
-        self.client = client
-        self.model  = model
+        self.provider = provider
 
     def generate(
         self,
@@ -455,13 +453,9 @@ Return ONLY valid JSON in this exact structure:
   }}
 }}"""
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=4000,
-                messages=[{"role": "user", "content": prompt}]
-            )
-
-            raw = message.content[0].text.strip()
+            raw = self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=4000
+            ).strip()
 
             # Safe JSON parse with fence stripping
             try:

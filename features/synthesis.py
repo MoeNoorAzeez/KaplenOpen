@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, request, Response
 import json
 import csv
 from pathlib import Path
-import anthropic
+from features.llm_provider import get_provider as _get_provider
 from collections import defaultdict
 import logging
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 synthesis_bp = Blueprint('synthesis', __name__, url_prefix='/api/teachers/synthesis')
 
-client = anthropic.Anthropic()
+_provider = _get_provider()
 
 
 class StreamingSynthesizer:
@@ -94,16 +94,10 @@ class StreamingSynthesizer:
 """
         
         try:
-            import os
-            _model = os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-4-6')
-            response = client.messages.create(
-                model=_model,
-                max_tokens=800,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            
             import re
-            text = response.content[0].text
+            text = _provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=800
+            )
             match = re.search(r'\{.*\}', text, re.DOTALL)
             if match:
                 return json.loads(match.group())

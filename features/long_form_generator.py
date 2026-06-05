@@ -35,19 +35,17 @@ class LongFormVideoGenerator:
     5. Assemble final script
     """
 
-    def __init__(self, client, model, data_loader, s3_client, bucket, validator, dedup):
+    def __init__(self, provider, data_loader, s3_client, bucket, validator, dedup):
         """
         Args:
-            client:      anthropic.Anthropic instance
-            model:       model string
+            provider:    features.llm_provider.LLMProvider instance
             data_loader: features.data_loader.DataLoader
             s3_client:   boto3.client('s3')
             bucket:      S3 bucket name
             validator:   features.validator.ContentValidator
             dedup:       features.dedup.Dedup
         """
-        self.client = client
-        self.model = model
+        self.provider = provider
         self.data_loader = data_loader
         self.s3_client = s3_client
         self.bucket = bucket
@@ -311,13 +309,9 @@ Requirements:
 
 Generate the complete outline as valid JSON."""
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=3000,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            
-            outline_text = message.content[0].text.strip()
+            outline_text = self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=3000
+            ).strip()
             
             # Extract JSON from response
             try:
@@ -392,18 +386,11 @@ SECTION {section_num}/{total_sections}: {section['name']}
 
 Write the full section content now:"""
 
-            # Stream the response
-            section_content = ""
-            
-            with self.client.messages.stream(
-                model=self.model,
+            section_content = self.provider.stream_complete(
+                [{"role": "user", "content": prompt}],
                 max_tokens=2000,
-                messages=[{"role": "user", "content": prompt}]
-            ) as stream:
-                for text in stream.text_stream:
-                    section_content += text
-                    if stream_callback:
-                        stream_callback('section_stream', text)
+                on_token=lambda t: stream_callback('section_stream', t) if stream_callback else None,
+            )
             
             section_content = section_content.strip()
             logger.info(f"Section {section_num} streamed: {len(section_content.split())} words")

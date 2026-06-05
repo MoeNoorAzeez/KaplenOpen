@@ -26,10 +26,17 @@ class Config:
     AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
     S3_BUCKET = os.getenv('S3_BUCKET')
 
-    # Anthropic
+    # LLM provider (provider-agnostic)
+    LLM_PROVIDER = os.getenv('LLM_PROVIDER', 'anthropic')   # anthropic | openai
+    LLM_API_KEY  = os.getenv('LLM_API_KEY')                 # falls back to provider-specific key
+    LLM_MODEL    = os.getenv('LLM_MODEL')                   # falls back to provider default
+    LLM_BASE_URL = os.getenv('LLM_BASE_URL')                # for OpenAI-compatible endpoints
+
+    # Provider-specific keys (used as fallbacks by llm_provider.get_provider())
     ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
-    ANTHROPIC_MODEL = os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-4-6')
-    ANTHROPIC_MODEL_ESSAY = os.getenv('ANTHROPIC_MODEL_ESSAY', 'claude-sonnet-4-6')
+    ANTHROPIC_MODEL   = os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-4-6')
+    OPENAI_API_KEY    = os.getenv('OPENAI_API_KEY')
+    OPENAI_MODEL      = os.getenv('OPENAI_MODEL', 'gpt-4o')
 
     # Application
     DOMAIN = os.getenv('DOMAIN', 'localhost:5000')

@@ -34,31 +34,20 @@ def check_database() -> dict:
         return {'status': 'unhealthy', 'message': f'Database error: {str(e)}'}
 
 
-def check_claude_api() -> dict:
+def check_llm_api() -> dict:
     try:
-        import anthropic
-
-        api_key = os.getenv('ANTHROPIC_API_KEY')
-        if not api_key:
-            return {'status': 'unhealthy', 'message': 'ANTHROPIC_API_KEY not set'}
-
-        client = anthropic.Anthropic(api_key=api_key)
-        model = os.getenv('ANTHROPIC_MODEL', 'claude-haiku-4-5-20251001')
-
-        client.messages.create(
-            model=model,
-            max_tokens=10,
-            messages=[{"role": "user", "content": "ok"}]
-        )
-        return {'status': 'healthy', 'message': 'Claude API connected'}
+        from features.llm_provider import get_provider
+        provider = get_provider()
+        provider.complete([{"role": "user", "content": "ok"}], max_tokens=10)
+        return {'status': 'healthy', 'message': f'LLM API connected ({provider.model_name})'}
     except Exception as e:
-        logger.error(f"Claude API health check failed: {e}")
-        return {'status': 'unhealthy', 'message': f'Claude API error: {str(e)}'}
+        logger.error(f"LLM API health check failed: {e}")
+        return {'status': 'unhealthy', 'message': f'LLM API error: {str(e)}'}
 
 
 def get_full_health_check() -> dict:
     db_status     = check_database()
-    claude_status = check_claude_api()
+    claude_status = check_llm_api()
 
     if db_status['status'] == 'healthy' and claude_status['status'] == 'healthy':
         overall = 'healthy'

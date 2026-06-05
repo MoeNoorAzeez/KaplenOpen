@@ -42,9 +42,8 @@ class EssayGenerator:
     Each section is generated in 500-word chunks then merged.
     """
 
-    def __init__(self, client, model, validator=None, dedup=None):
-        self.client = client
-        self.model = model
+    def __init__(self, provider, validator=None, dedup=None):
+        self.provider = provider
         self.validator = validator
         self.dedup = dedup
 
@@ -204,13 +203,9 @@ Respond with JSON only, no preamble:
     "material_quality": "excellent/good/adequate"
 }}"""
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=1000,
-                messages=[{"role": "user", "content": prompt}]
-            )
-
-            text = message.content[0].text.strip()
+            text = self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=1000
+            ).strip()
 
             try:
                 analysis = json.loads(text)
@@ -306,13 +301,9 @@ Requirements:
 4. Sections build argument logically
 5. Expand source material themes with original analysis"""
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=3000,
-                messages=[{"role": "user", "content": prompt}]
-            )
-
-            outline_text = message.content[0].text.strip()
+            outline_text = self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=3000
+            ).strip()
 
             try:
                 outline = json.loads(outline_text)
@@ -411,15 +402,11 @@ Write now:"""
 
                 chunk_content = ""
 
-                with self.client.messages.stream(
-                    model=self.model,
+                chunk_content = self.provider.stream_complete(
+                    [{"role": "user", "content": prompt}],
                     max_tokens=900,
-                    messages=[{"role": "user", "content": prompt}]
-                ) as stream:
-                    for text in stream.text_stream:
-                        chunk_content += text
-                        if stream_callback:
-                            stream_callback('section_stream', text)
+                    on_token=lambda t: stream_callback('section_stream', t) if stream_callback else None,
+                )
 
                 chunk_content = chunk_content.strip()
                 chunks.append(chunk_content)

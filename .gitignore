@@ -11,7 +11,6 @@ build/
 
 # Mac
 .DS_Store
-._*
 
 # Secrets — NEVER commit these
 .env

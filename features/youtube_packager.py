@@ -142,9 +142,8 @@ TeacherProfile = CreatorProfile
 
 class YoutubePackager:
 
-    def __init__(self, client, model: str):
-        self.client = client
-        self.model  = model
+    def __init__(self, provider):
+        self.provider = provider
 
     # ══════════════════════════════════════════════════════════════════════
     # PUBLIC API
@@ -196,12 +195,9 @@ class YoutubePackager:
                 "- No preamble, no explanation — hook only\n"
             )
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=150,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            return message.content[0].text.strip()
+            return self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=150
+            ).strip()
 
         except Exception as e:
             logger.error(f"Hook generation error: {e}")
@@ -275,13 +271,9 @@ class YoutubePackager:
                 "Write ONE title only, no explanation:\n"
             )
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=200,
-                messages=[{"role": "user", "content": prompt}]
-            )
-
-            title = message.content[0].text.strip()
+            title = self.provider.complete(
+                [{"role": "user", "content": prompt}], max_tokens=200
+            ).strip()
             title = (
                 title
                 .replace("Title:", "")
@@ -368,14 +360,10 @@ class YoutubePackager:
                 "Write the design brief directly, no preamble:\n"
             )
 
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=400,
-                messages=[{"role": "user", "content": prompt}]
-            )
-
             result = (
-                message.content[0].text.strip()
+                self.provider.complete(
+                    [{"role": "user", "content": prompt}], max_tokens=400
+                ).strip()
                 .replace("Design:", "")
                 .replace("**", "")
                 .replace("Brief:", "")
