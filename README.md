@@ -20,7 +20,45 @@ Kaplen is an open-source B2B SaaS platform that converts source material — cur
 
 The generation pipeline outputs YouTube scripts with timed sections, Callaway narrative beats, thumbnail prompts, titles, and DOCX exports. No LLM lock-in: switch between Anthropic, OpenAI, Ollama, Groq, or Together AI with a single environment variable.
 
-> **Research note** — Kaplen is the subject of a practitioner study on operator-driven AI development: *"Engineering Without Coding"* (Azeez, 2026). It was built in 32 days at a tooling cost of USD 500 with no code written directly. See [OVERVIEW.md](OVERVIEW.md) for the full story.
+---
+
+## Built as a Research Project
+
+Kaplen was designed from the start as a research instrument, not just a product. The system was built in **32 calendar days** at a total tooling cost of **USD 500** by a single operator with a computer science background who wrote no code directly — all implementation was delegated to Claude through conversational interface across 18 documented sessions and 3,662 operator-model turns.
+
+The completed platform shipped **34 production modules**, passed **99.7% uptime** across the production period, and was validated commercially — one customer reached letter-of-intent stage before sales were paused for the research period.
+
+This build is the subject of a peer-reviewed practitioner study:
+
+> **"Engineering Without Coding: A Practitioner Study of Operator-Driven AI Development"**
+> MohamadAlmstafa Azeez — Independent Researcher, Baghdad, Iraq (2026)
+>
+> The paper documents four failure modes that appear consistently when an LLM is used as a sole implementation agent (configuration blindness, fragmentation, accumulation without consolidation, scope creep), the compensating behaviors the operator developed in response, and evidence that software engineering competence and coding ability functioned as separable skills in this case.
+
+**Build stats at a glance:**
+
+| Metric | Value |
+|---|---|
+| Calendar days to production | 32 |
+| Total tooling cost | USD 500 |
+| Estimated traditional equivalent | USD 150,000–280,000 |
+| Cost compression ratio | ~300× |
+| Documented modules | 34 |
+| Operator-model turns | 3,662 |
+| System uptime | 99.7% |
+
+### Production metrics
+
+The first video produced using a Kaplen-generated script, thumbnail, and title achieved:
+
+| Metric | Result | Benchmark |
+|---|---|---|
+| Average View Duration (AVD) | **60%** | 50% = strong for educational content |
+| Click-Through Rate (CTR) | **7%** | 2–3% = YouTube platform average |
+
+The platform processed **200 curriculum textbooks** across **3 grade levels, 18 subjects, 108 topics, and 432 subtopics**. Unit economics validated at **USD 67/teacher/month**, billing at the educational center level (7–20 teachers per center) at **USD 469–1,340/center/month**.
+
+Full write-up: [OVERVIEW.md](OVERVIEW.md)
 
 ---
 
