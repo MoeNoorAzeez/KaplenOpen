@@ -28,7 +28,7 @@ Kaplen was designed from the start as a research instrument, not just a product.
 
 The completed platform shipped **34 production modules**, passed **99.7% uptime** across the production period, and was validated commercially — one customer reached letter-of-intent stage before sales were paused for the research period.
 
-This build is the subject of a peer-reviewed practitioner study:
+This build is the subject of a practitioner study:
 
 > **"Engineering Without Coding: A Practitioner Study of Operator-Driven AI Development"**
 > MohamadAlmstafa Azeez — Independent Researcher, Baghdad, Iraq (2026)
