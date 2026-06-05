@@ -1,84 +1,180 @@
-# Kaplen — AI-Powered Curriculum Content Generator
+<div align="center">
 
-Kaplen is an open-source platform that helps educators produce curriculum-aligned YouTube scripts, long-form video content, study-tip scripts, essays, and podcast outlines — powered by **any LLM**: Anthropic Claude, OpenAI GPT, or any OpenAI-compatible endpoint (Ollama, Together AI, Groq, and more).
+# Kaplen
 
-## What It Does
+**Turn written content into video-ready scripts — powered by any LLM**
 
-| Feature | Description |
-|---|---|
-| **Curriculum scripts** | 8–20 min YouTube scripts matched to subject/topic/subtopic, with Callaway narrative beats, hooks, and thumbnail prompts |
-| **Long-form videos** | 1-hour or 3-hour deep-dive scripts generated section-by-section with real-time streaming |
-| **Study tips** | Motivational/study-skill scripts — no curriculum dataset required |
-| **Essays** | Chunked source-material ingestion → structured essay with streaming output |
-| **Podcast outlines** | Multi-segment show notes and talking points |
-| **YouTube analytics** | Per-teacher channel metrics via Google OAuth, stored in Postgres |
-| **DOCX export** | Every content type downloadable as a Word document |
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-3.x-lightgrey.svg)](https://flask.palletsprojects.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-blue.svg)](https://postgresql.org)
+[![Provider Agnostic](https://img.shields.io/badge/LLM-Anthropic%20%7C%20OpenAI%20%7C%20Ollama-purple.svg)](#switching-llm-providers)
+
+[**Quick Start**](#quick-start) · [**API Reference**](SPEC.md) · [**Architecture**](ARCHITECTURE.md) · [**Deploy**](DEPLOYMENT.md)
+
+</div>
+
+---
+
+Kaplen is an open-source B2B SaaS platform that converts source material — curriculum PDFs, articles, research papers, essays — into structured, spoken-word video scripts. It was built to serve **Iraqi schoolteachers** creating YouTube content from the national curriculum, and later extended to serve **writers and journalists** turning their existing work into video.
+
+The generation pipeline outputs YouTube scripts with timed sections, Callaway narrative beats, thumbnail prompts, titles, and DOCX exports. No LLM lock-in: switch between Anthropic, OpenAI, Ollama, Groq, or Together AI with a single environment variable.
+
+> **Research note** — Kaplen is the subject of a practitioner study on operator-driven AI development: *"Engineering Without Coding"* (Azeez, 2026). It was built in 32 days at a tooling cost of USD 500 with no code written directly. See [OVERVIEW.md](OVERVIEW.md) for the full story.
+
+---
+
+## What Kaplen Does
+
+### For educators
+Upload a curriculum PDF. Select a subject, topic, and subtopic. Get a complete Arabic-language YouTube script — hook, timed sections, Callaway beats, thumbnail prompt, and YouTube metadata — ready to record.
+
+### For writers and journalists
+Paste an article or research piece. Select a video duration (10, 15, or 25 minutes) and style (Explainer / Commentary / Analysis / Personal Take). Get a spoken-word script that converts your written argument into a format that earns watch-time on YouTube.
+
+### For developers
+A clean Flask API with a provider-agnostic LLM abstraction, 12 Postgres tables (auto-created on first boot), 45 documented endpoints, SSE streaming for long-form generation, and a curriculum registry you can extend for any subject hierarchy.
+
+---
 
 ## Quick Start
 
-### 1. Clone & Install
+### Prerequisites
+
+- Python 3.10+
+- PostgreSQL 14+
+- An API key for your chosen LLM provider (or [Ollama](https://ollama.ai) running locally)
+
+### 1 — Clone and install
 
 ```bash
 git clone https://github.com/your-org/kaplen.git
 cd kaplen
-python -m venv venv && source venv/bin/activate
+python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Configure
+### 2 — Configure
 
 ```bash
 cp .env.example .env
-# Edit .env — set DB_* variables and your LLM key
 ```
 
-Minimum required:
+Open `.env` and fill in the minimum required values:
 
 ```env
+# Database
 DB_HOST=localhost
 DB_NAME=kaplen
 DB_USER=postgres
 DB_PASSWORD=yourpassword
 
-LLM_PROVIDER=anthropic           # or: openai
-ANTHROPIC_API_KEY=sk-ant-...     # if using Anthropic
-# OPENAI_API_KEY=sk-...          # if using OpenAI
+# LLM — pick one provider
+LLM_PROVIDER=anthropic
+ANTHROPIC_API_KEY=sk-ant-...
 
+# App secrets
 SECRET_KEY=change-me-in-production
 JWT_SECRET=change-me-in-production
 ```
 
-### 3. Run
+### 3 — Run
 
 ```bash
 python app.py
-# App starts at http://localhost:5000
-# Database tables are created automatically on first boot
 ```
 
-### 4. Docker (optional)
+The server starts at **http://localhost:5000**. All 12 database tables are created automatically on first boot — no migrations to run.
+
+### 4 — Verify
+
+```bash
+curl http://localhost:5000/api/health
+# → {"status": "ok", "db": "connected", "llm": "connected"}
+```
+
+### Docker (optional)
 
 ```bash
 docker compose up
 ```
 
+---
+
 ## Switching LLM Providers
 
-Set `LLM_PROVIDER` and the matching key — **no code changes needed**.
+Set `LLM_PROVIDER` and the matching key in `.env`. **No code changes.**
 
-| Provider | `LLM_PROVIDER` | Key variable | Notes |
+| Provider | `LLM_PROVIDER` | Key variable | Extra |
 |---|---|---|---|
 | Anthropic Claude | `anthropic` | `ANTHROPIC_API_KEY` | Default |
 | OpenAI GPT | `openai` | `OPENAI_API_KEY` | |
-| Ollama (local) | `openai` | `OPENAI_API_KEY=ollama` | Add `LLM_BASE_URL=http://localhost:11434/v1` |
-| Together AI | `openai` | `OPENAI_API_KEY=...` | Add `LLM_BASE_URL=https://api.together.xyz/v1` |
-| Groq | `openai` | `OPENAI_API_KEY=...` | Add `LLM_BASE_URL=https://api.groq.com/openai/v1` |
+| Ollama (local) | `openai` | `OPENAI_API_KEY=ollama` | `LLM_BASE_URL=http://localhost:11434/v1` |
+| Together AI | `openai` | `OPENAI_API_KEY=<key>` | `LLM_BASE_URL=https://api.together.xyz/v1` |
+| Groq | `openai` | `OPENAI_API_KEY=<key>` | `LLM_BASE_URL=https://api.groq.com/openai/v1` |
 
-Override the model with `LLM_MODEL=model-id`.
+Override the model name with `LLM_MODEL=model-id`.
 
-## Custom Curriculum
+---
 
-Edit `curricula/registry.json` to register your curriculum. Example entry:
+## API
+
+The API is JWT-authenticated. Register an account, log in, and pass the token as `Authorization: Bearer <token>`.
+
+### Core endpoints
+
+```
+GET  /api/health                     → system health (DB + LLM)
+POST /api/auth/signup                → register
+POST /api/auth/login                 → login → JWT
+GET  /api/auth/me                    → current user
+
+GET  /api/curricula                  → list available curricula
+POST /api/generate            [JWT]  → generate curriculum script (SSE)
+POST /api/generate-long-form  [JWT]  → 1hr/3hr deep-dive script (SSE)
+POST /api/essay/generate      [JWT]  → article → YouTube script (SSE)
+POST /api/podcast/generate    [JWT]  → podcast outline
+
+GET  /api/export/<script_id>  [JWT]  → download as DOCX
+GET  /api/analytics/<id>      [JWT]  → channel improvement metrics
+```
+
+**Generate a script** (example):
+
+```bash
+curl -X POST http://localhost:5000/api/generate \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "curriculum_id": "iraqi-moe-2024",
+    "subject": "physics",
+    "topic": "mechanics",
+    "subtopic": "newtons-laws",
+    "duration": 10
+  }'
+```
+
+**Convert an article to a YouTube script**:
+
+```bash
+curl -X POST http://localhost:5000/api/essay/generate \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source_text": "your article or research content here...",
+    "essay_type": "youtube_15",
+    "style": "explainer",
+    "audience": "general"
+  }'
+```
+
+Full schema for every endpoint, request body, and response: [SPEC.md](SPEC.md)
+
+---
+
+## Curriculum Registry
+
+Register any subject hierarchy by editing `curricula/registry.json`:
 
 ```json
 {
@@ -90,7 +186,9 @@ Edit `curricula/registry.json` to register your curriculum. Example entry:
       "levels": ["subject", "topic", "subtopic"],
       "s3_path_template": "{subject}/{topic}/{subtopic}.json"
     },
-    "quality": { "min_word_count": 800 },
+    "quality": {
+      "min_word_count": 800
+    },
     "generation_hints": {
       "tone": "conversational",
       "audience": "high school students"
@@ -99,80 +197,100 @@ Edit `curricula/registry.json` to register your curriculum. Example entry:
 }
 ```
 
-See [CURRICULUM_SPEC.md](CURRICULUM_SPEC.md) for the full schema.
+The platform ships with the Iraqi Ministry of Education curriculum pre-registered. Full schema and validation rules: [SPEC.md § Curriculum Registry](SPEC.md).
 
-## Running Tests
-
-```bash
-pip install pytest
-pytest
-# 24 smoke tests — no live DB, S3, or LLM calls required
-```
-
-## API Overview
-
-| Method | Path | Auth | Description |
-|---|---|---|---|
-| GET | `/api/health` | — | Full health check (DB + LLM) |
-| GET | `/api/status` | — | Liveness probe |
-| POST | `/api/auth/signup` | — | Register |
-| POST | `/api/auth/login` | — | Login → JWT |
-| GET | `/api/auth/me` | JWT | Current user profile |
-| GET | `/api/curricula` | — | List registered curricula |
-| POST | `/api/generate` | JWT + subscription | Generate curriculum script |
-| POST | `/api/generate-study-tips` | — | Study tips (no auth) |
-| POST | `/api/generate-long-form` | JWT | Streaming long-form video |
-| POST | `/api/essay/generate` | JWT | Essay from source material |
-| POST | `/api/podcast/generate` | JWT | Podcast outline |
-| GET | `/api/export/<script_id>` | JWT | Download script as DOCX |
-| GET | `/api/analytics/<teacher_id>` | JWT | Improvement metrics |
-
-Complete endpoint reference with request/response schemas: [SPEC.md](SPEC.md).
+---
 
 ## Project Structure
 
 ```
 kaplen/
-├── app.py                      # entry point, wiring
-├── api_endpoints.py            # all 45 routes
-├── config.py                   # env-var config class
+├── app.py                       # entry point and route wiring
+├── api_endpoints.py             # all 45 routes
+├── config.py                    # env-var config
+│
 ├── features/
-│   ├── llm_provider.py         # LLM abstraction (Anthropic / OpenAI)
-│   ├── auth.py                 # JWT auth helpers + decorators
-│   ├── database.py             # Postgres (12 tables, auto-init)
-│   ├── script_generator.py     # standard curriculum scripts
-│   ├── long_form_generator.py  # 1hr / 3hr streaming generator
-│   ├── essay_generator.py      # essay from source material
-│   ├── podcast_generator.py    # podcast outlines
-│   ├── study_tips.py           # study-tip scripts
-│   ├── callaway.py             # narrative direction + beat analysis
-│   ├── youtube_packager.py     # hook / title / thumbnail
-│   ├── validator.py            # curriculum-coverage scoring
-│   ├── payments.py             # Wayl webhook + subscription checks
-│   ├── youtube_oauth_manager.py
-│   ├── youtube_api_fetcher.py
+│   ├── llm_provider.py          # provider abstraction (Anthropic / OpenAI-compat)
+│   ├── auth.py                  # JWT helpers and decorators
+│   ├── database.py              # Postgres — 12 tables, auto-init on boot
+│   ├── script_generator.py      # curriculum script pipeline
+│   ├── long_form_generator.py   # 1hr / 3hr streaming generator
+│   ├── essay_generator.py       # article → YouTube script
+│   ├── podcast_generator.py     # podcast outlines
+│   ├── study_tips.py            # motivational / study-skill scripts
+│   ├── callaway.py              # narrative beats and direction
+│   ├── youtube_packager.py      # hook / title / thumbnail prompts
+│   ├── validator.py             # curriculum coverage scoring
+│   ├── payments.py              # Stripe subscription checks
+│   ├── analytics.py             # per-teacher metrics
+│   ├── dedup.py                 # dual-hash deduplication
 │   └── ...
+│
 ├── curricula/
-│   └── registry.json
-├── static/                     # frontend HTML files
+│   └── registry.json            # curriculum definitions
+│
+├── static/                      # dashboard HTML
 ├── tests/
 │   ├── conftest.py
-│   └── test_smoke.py
+│   └── test_smoke.py            # 24 tests — no live DB/LLM required
+│
 ├── Dockerfile
 ├── docker-compose.yml
-├── Procfile
+├── Procfile                     # Heroku
 └── .env.example
 ```
 
+---
+
+## Tests
+
+```bash
+pip install pytest
+pytest
+# 24 smoke tests — all pass without a live DB, S3, or LLM
+```
+
+---
+
+## Deployment
+
+| Target | Guide |
+|---|---|
+| Local | This README |
+| Docker Compose | [DEPLOYMENT.md § Docker](DEPLOYMENT.md) |
+| Heroku | [DEPLOYMENT.md § Heroku](DEPLOYMENT.md) |
+| AWS EC2 + Nginx + RDS | [DEPLOYMENT.md § EC2](DEPLOYMENT.md) |
+
+The production system runs on EC2 t3.small with PostgreSQL on RDS, S3 for curriculum storage, and Nginx as a reverse proxy. Nginx configuration for SSE (streaming) responses is included in the deploy guide.
+
+---
+
 ## Documentation
 
-| File | Contents |
+| File | What's in it |
 |---|---|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Component diagram, layer model, data flow |
-| [DEPLOYMENT.md](DEPLOYMENT.md) | Docker, Heroku, EC2 — full deploy guide |
-| [CURRICULUM_SPEC.md](CURRICULUM_SPEC.md) | Curriculum registry JSON schema |
-| [SPEC.md](SPEC.md) | Complete API + DB + provider technical spec |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
+| [OVERVIEW.md](OVERVIEW.md) | Platform overview — education, script studio, research background |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Layer diagram, all 34 modules, LLM abstraction, DB schema |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Full deploy guides — local, Docker, Heroku, EC2 |
+| [SPEC.md](SPEC.md) | Every endpoint, every DB table, SSE protocol, error codes |
+
+---
+
+## Contributing
+
+Pull requests are welcome. For significant changes, open an issue first.
+
+To add a new LLM provider, implement the `LLMProvider` interface in `features/llm_provider.py`:
+
+```python
+class MyProvider(LLMProvider):
+    def complete(self, prompt: str, **kwargs) -> str: ...
+    def stream_complete(self, prompt: str, on_token: Callable[[str], None], **kwargs) -> str: ...
+```
+
+Register it in `config.py` and set `LLM_PROVIDER=myprovider` in `.env`.
+
+---
 
 ## License
 
