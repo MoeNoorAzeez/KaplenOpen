@@ -11,6 +11,18 @@ build/
 
 # Mac
 .DS_Store
+._*
+._.DS_Store
+
+# Test / build cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Word / Office files (local docs, not source)
+*.docx
+*.xlsx
+*.pptx
 
 # Secrets — NEVER commit these
 .env

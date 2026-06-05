@@ -267,7 +267,8 @@ kaplen/
 ├── curricula/
 │   └── registry.json            # curriculum definitions
 │
-├── static/                      # dashboard HTML
+├── dashboard.html               # teacher dashboard UI
+├── essay_generator.html         # Script Studio UI
 ├── tests/
 │   ├── conftest.py
 │   └── test_smoke.py            # 24 tests — no live DB/LLM required
