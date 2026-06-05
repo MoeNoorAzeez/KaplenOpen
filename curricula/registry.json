@@ -31,6 +31,8 @@
     },
     "us-k12-stem": {
       "name": "US K-12 STEM",
+      "status": "template",
+      "_note": "Template only — no S3 content included. Copy this entry, set your own path_template, and upload content files to S3 to activate.",
       "language": "en",
       "region": "US",
       "s3_bucket_env": "S3_BUCKET",

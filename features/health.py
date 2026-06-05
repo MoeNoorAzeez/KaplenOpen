@@ -5,7 +5,7 @@ Health checks and monitoring.
 
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 import psycopg2
 
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ def get_full_health_check() -> dict:
 
     return {
         'status': overall,
-        'timestamp': datetime.utcnow().isoformat(),
+        'timestamp': datetime.now(tz=timezone.utc).isoformat(),
         'version': os.getenv('APP_VERSION', '1.0.0'),
         'components': {
             'database':  db_status,
@@ -81,6 +81,6 @@ def get_full_health_check() -> dict:
 def get_quick_health_check() -> dict:
     return {
         'status': 'ok',
-        'timestamp': datetime.utcnow().isoformat(),
+        'timestamp': datetime.now(tz=timezone.utc).isoformat(),
         'version': os.getenv('APP_VERSION', '1.0.0'),
     }
