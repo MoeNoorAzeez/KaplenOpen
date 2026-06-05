@@ -36,7 +36,7 @@ def check_database() -> dict:
 
 def check_llm_api() -> dict:
     try:
-        from features.llm_provider import get_provider
+        from kaplen.features.llm_provider import get_provider
         provider = get_provider()
         provider.complete([{"role": "user", "content": "ok"}], max_tokens=10)
         return {'status': 'healthy', 'message': f'LLM API connected ({provider.model_name})'}

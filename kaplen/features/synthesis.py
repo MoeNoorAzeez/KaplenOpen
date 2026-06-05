@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, request, Response
 import json
 import csv
 from pathlib import Path
-from features.llm_provider import get_provider as _get_provider
+from kaplen.features.llm_provider import get_provider as _get_provider
 from collections import defaultdict
 import logging
 

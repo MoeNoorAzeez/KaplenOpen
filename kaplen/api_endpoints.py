@@ -76,12 +76,12 @@ import traceback
 
 from flask import jsonify, request
 
-from features.auth     import require_jwt, require_admin, signup_user, login_user, get_current_user, AuthError
-from features.payments import handle_wayl_webhook, verify_wayl_webhook_signature, get_billing_status, get_payment_history
-from features.security import validate_email, validate_password, validate_username, setup_security_headers, setup_https_redirect
-from features.health   import get_full_health_check, get_quick_health_check
-from features          import register_features
-from features.payments import require_active_subscription
+from kaplen.features.auth     import require_jwt, require_admin, signup_user, login_user, get_current_user, AuthError
+from kaplen.features.payments import handle_wayl_webhook, verify_wayl_webhook_signature, get_billing_status, get_payment_history
+from kaplen.features.security import validate_email, validate_password, validate_username, setup_security_headers, setup_https_redirect
+from kaplen.features.health   import get_full_health_check, get_quick_health_check
+from kaplen.features          import register_features
+from kaplen.features.payments import require_active_subscription
 
 logger = logging.getLogger(__name__)
 
@@ -606,7 +606,7 @@ def register_all_routes(app, data_loader, script_generator, study_tips_generator
     def admin_list_teachers():
         """List all teachers. Admin only."""
         try:
-            from features.database import DB
+            from kaplen.features.database import DB
             from psycopg2.extras import RealDictCursor
 
             conn = DB().get_connection()
@@ -775,8 +775,8 @@ def register_all_routes(app, data_loader, script_generator, study_tips_generator
     # ════════════════════════════════════════════════════════════════════
     
     # Initialize YouTube managers
-    from features.youtube_oauth_manager import YouTubeOAuthManager
-    from features.youtube_api_fetcher import YouTubeAPIFetcher
+    from kaplen.features.youtube_oauth_manager import YouTubeOAuthManager
+    from kaplen.features.youtube_api_fetcher import YouTubeAPIFetcher
     
     oauth_manager = YouTubeOAuthManager(script_store.db)
     api_fetcher = YouTubeAPIFetcher(oauth_manager)
@@ -985,7 +985,7 @@ def register_all_routes(app, data_loader, script_generator, study_tips_generator
     
     # Import long-form generator if not provided
     if not long_form_gen:
-        from features.long_form_generator import LongFormVideoGenerator
+        from kaplen.features.long_form_generator import LongFormVideoGenerator
         
         if not s3_client:
             import boto3
@@ -1220,7 +1220,7 @@ def register_all_routes(app, data_loader, script_generator, study_tips_generator
     # ESSAY GENERATOR (Hidden Premium Feature)
     # ════════════════════════════════════════════════════════════════════
     
-    from features.essay_generator import EssayGenerator
+    from kaplen.features.essay_generator import EssayGenerator
     from functools import wraps
     
     essay_gen = EssayGenerator(
@@ -1622,7 +1622,7 @@ def register_all_routes(app, data_loader, script_generator, study_tips_generator
             if not speaker_profile or not guest_profile or not episode_context:
                 return jsonify({'error': 'speaker_profile, guest_profile, and episode_context required'}), 400
 
-            from features.podcast_generator import PodcastOutlineGenerator
+            from kaplen.features.podcast_generator import PodcastOutlineGenerator
             podcast_gen = PodcastOutlineGenerator(llm_provider)
             result = podcast_gen.generate(speaker_profile, guest_profile, episode_context)
 

@@ -15,7 +15,7 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 
-from config import get_config
+from kaplen.config import get_config
 
 load_dotenv()
 
@@ -36,7 +36,7 @@ CORS(app)
 # INFRASTRUCTURE
 # ============================================================================
 
-from features.llm_provider import get_provider
+from kaplen.features.llm_provider import get_provider
 
 llm_provider = get_provider()
 s3_client    = boto3.client(
@@ -53,19 +53,19 @@ BUCKET = config.S3_BUCKET
 # Layer 0 → Layer 1 → Layer 2
 # ============================================================================
 
-from features.database           import DB
-from features.dedup              import Dedup
-from features.data_loader        import DataLoader
-from features.curriculum_loader  import CurriculumRegistry, CurriculumLoader
-from features.callaway           import CallawayFramework
-from features.youtube_packager   import YoutubePackager
-from features.validator          import ContentValidator
-from features.script_store       import ScriptStore
-from features.yt_analytics       import YtAnalyticsStore
-from features.metrics            import MetricsEngine
-from features.script_generator   import ScriptGenerator
-from features.study_tips         import StudyTipsGenerator
-from features.docx_export        import DocxExporter
+from kaplen.features.database           import DB
+from kaplen.features.dedup              import Dedup
+from kaplen.features.data_loader        import DataLoader
+from kaplen.features.curriculum_loader  import CurriculumRegistry, CurriculumLoader
+from kaplen.features.callaway           import CallawayFramework
+from kaplen.features.youtube_packager   import YoutubePackager
+from kaplen.features.validator          import ContentValidator
+from kaplen.features.script_store       import ScriptStore
+from kaplen.features.yt_analytics       import YtAnalyticsStore
+from kaplen.features.metrics            import MetricsEngine
+from kaplen.features.script_generator   import ScriptGenerator
+from kaplen.features.study_tips         import StudyTipsGenerator
+from kaplen.features.docx_export        import DocxExporter
 
 # Layer 0
 db    = DB()
@@ -102,7 +102,7 @@ db.init_tables()
 # ROUTE REGISTRATION
 # ============================================================================
 
-from api_endpoints import register_all_routes
+from kaplen.api_endpoints import register_all_routes
 
 register_all_routes(
     app,
