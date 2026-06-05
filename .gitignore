@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.bak
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Mac
+.DS_Store
+._*
+
+# Secrets — NEVER commit these
+.env
+*.pem
+*.key
+credentials.json
+service_account.json
+
+# Node / Next.js (frontend)
+node_modules/
+app/.next/
+.next/
+
+# Large data files
+*.log
+transcripts_*/
+synthesis_*/
+
+# Local dev artifacts
+nocode/
+Step5
+update

@@ -1,0 +1,53 @@
+{
+  "curricula": {
+    "iraqi-moe-2024": {
+      "name": "Iraqi Ministry of Education 2024",
+      "language": "ar",
+      "region": "IQ",
+      "s3_bucket_env": "S3_BUCKET",
+      "structure": {
+        "levels": ["subject", "topic", "subtopic"],
+        "path_template": "subtopics/{subject}/{topic}/{subtopic}.json",
+        "subject_map": {
+          "physics":          "physics",
+          "chemistry":        "chemistry",
+          "biology":          "bio",
+          "arabic_language":  "arabic",
+          "english_language": "english",
+          "mathematics":      "math",
+          "general":          "general"
+        }
+      },
+      "metadata": {
+        "grade_range": "9-12",
+        "subjects": ["chemistry", "physics", "biology", "mathematics", "arabic_language", "english_language"],
+        "hook_archetypes": ["teacher", "relatable", "question", "story", "surprising", "problem"],
+        "quality_rules": {
+          "min_coverage_percentage": 70,
+          "dimensions": ["accuracy", "completeness", "clarity", "engagement", "curriculum_alignment"]
+        },
+        "title_patterns": ["curriculum_specificity", "pain_point", "exam_stakes", "density", "credibility"]
+      }
+    },
+    "us-k12-stem": {
+      "name": "US K-12 STEM",
+      "language": "en",
+      "region": "US",
+      "s3_bucket_env": "S3_BUCKET",
+      "structure": {
+        "levels": ["grade", "subject", "unit", "lesson"],
+        "path_template": "us-stem/{grade}/{subject}/{unit}/{lesson}.json"
+      },
+      "metadata": {
+        "grade_range": "K-12",
+        "subjects": ["math", "physics", "biology", "chemistry", "cs"],
+        "hook_archetypes": ["question", "story", "surprising", "problem", "real_world"],
+        "quality_rules": {
+          "min_coverage_percentage": 80,
+          "dimensions": ["accuracy", "completeness", "engagement", "standards_alignment", "accessibility"]
+        },
+        "title_patterns": ["pain_point", "density", "credibility"]
+      }
+    }
+  }
+}

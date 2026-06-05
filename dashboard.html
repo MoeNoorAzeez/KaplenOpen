@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>كابلن — لوحة التحكم</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fafbfc;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-content {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #10b981;
+            letter-spacing: -0.5px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .teacher-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .teacher-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #d1fae5;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .teacher-name {
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .teacher-role {
+            color: #9ca3af;
+            font-size: 0.75rem;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: background 200ms;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* ===== TABS ===== */
+        .tabs-nav {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.25rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+            font-weight: 500;
+            font-size: 0.9375rem;
+            border-bottom: 3px solid transparent;
+            transition: all 200ms ease;
+            white-space: nowrap;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: #10b981;
+        }
+
+        .tab-btn.active {
+            color: #10b981;
+            border-bottom-color: #10b981;
+        }
+
+        /* ===== TAB CONTENT ===== */
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            min-height: 500px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 200ms ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(2px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== FORMS & INPUTS ===== */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+            font-size: 0.9375rem;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        /* CUSTOM SELECT (DROPDOWN) */
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-select select {
+            display: none;
+        }
+
+        .select-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+            cursor: pointer;
+            user-select: none;
+            transition: all 200ms ease;
+            font-size: 0.9375rem;
+        }
+
+        .select-display:hover {
+            border-color: #10b981;
+            background: #f9fce8;
+        }
+
+        .select-display.active {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .select-display-text {
+            flex: 1;
+            text-align: right;
+            color: #1f2937;
+        }
+
+        .select-display-text.placeholder {
+            color: #d1d5db;
+        }
+
+        .select-display-arrow {
+            color: #9ca3af;
+            margin-right: 0.5rem;
+            font-size: 0.75rem;
+            transition: transform 200ms ease;
+        }
+
+        .select-display.active .select-display-arrow {
+            transform: rotate(180deg);
+        }
+
+        .select-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            left: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 20;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-top: -1px;
+        }
+
+        .select-dropdown.hidden {
+            display: none;
+        }
+
+        .select-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 150ms ease;
+            text-align: right;
+            font-size: 0.9375rem;
+        }
+
+        .select-option:last-child {
+            border-bottom: none;
+        }
+
+        .select-option:hover {
+            background: #f0fdf4;
+            color: #10b981;
+        }
+
+        .select-option.selected {
+            background: #d1fae5;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        /* STANDARD INPUTS */
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 0.9375rem;
+            transition: all 200ms ease;
+            background: white;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.5;
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            transition: all 200ms ease;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #e5e7eb;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ALERTS */
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9375rem;
+            animation: slideDown 200ms ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert.success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #7f1d1d;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert.info {
+            background: #dbeafe;
+            color: #0c2d6b;
+            border-left: 4px solid #3b82f6;
+        }
+
+        /* CARDS & GRIDS */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 200ms ease;
+        }
+
+        .card:hover {
+            border-color: #10b981;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+        }
+
+        .card-title {
+            color: #6b7280;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-value {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .card-secondary {
+            color: #1f2937;
+            font-size: 0.9375rem;
+            margin-top: 0.5rem;
+        }
+
+        /* SCRIPT LIST */
+        .script-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: all 200ms ease;
+        }
+
+        .script-item:hover {
+            border-color: #10b981;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+        }
+
+        .script-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .script-item-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1f2937;
+            flex: 1;
+            text-align: right;
+        }
+
+        .script-item-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8125rem;
+            color: #9ca3af;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .script-item-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .script-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            justify-content: flex-start;
+        }
+
+        /* STREAMING INDICATOR */
+        .streaming-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #dbeafe;
+            color: #0c2d6b;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .streaming-dot {
+            width: 6px;
+            height: 6px;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* SECTION OUTPUT */
+        .output-section {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .output-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .output-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #fafbfc;
+            border-radius: 0.5rem;
+        }
+
+        .output-meta-item {
+            text-align: right;
+        }
+
+        .output-meta-label {
+            color: #6b7280;
+            font-size: 0.8125rem;
+            font-weight: 600;
+        }
+
+        .output-meta-value {
+            color: #1f2937;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        /* VALIDATION BADGES */
+        .validation-badge {
+            display: inline-block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .validation-badge.pass {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .validation-badge.warn {
+            background: #fef3c7;
+            color: #78350f;
+        }
+
+        .validation-badge.fail {
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        /* LOADING STATE */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #9ca3af;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #9ca3af;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-text {
+            font-size: 0.9375rem;
+            color: #9ca3af;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .tab-content {
+                padding: 1.5rem;
+                min-height: auto;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header-right {
+                gap: 1rem;
+            }
+
+            .script-item-header {
+                flex-direction: column;
+            }
+
+            .script-item-meta {
+                justify-content: flex-end;
+            }
+
+            .output-meta {
+                gap: 1rem;
+            }
+        }
+
+        /* TOOLTIP */
+        .tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #10b981;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <div class="logo">كابلن</div>
+        <div class="header-right">
+            <div class="teacher-info">
+                <div class="teacher-avatar" id="teacher-avatar">ك</div>
+                <div>
+                    <div class="teacher-name" id="teacher-name">المعلم</div>
+                    <div class="teacher-role" id="teacher-role">معلم</div>
+                </div>
+            </div>
+            <button class="logout-btn" id="logout-btn">تسجيل الخروج</button>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <!-- TABS NAVIGATION -->
+    <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="generate">توليد السكريبت</button>
+        <button class="tab-btn" data-tab="long-form">الفيديو الطويل</button>
+        <button class="tab-btn" data-tab="podcast">ملخص البودكاست</button>
+        <button class="tab-btn" data-tab="study-tips">نصائح الدراسة</button>
+        <button class="tab-btn" data-tab="scripts">السكريبتات المحفوظة</button>
+        <button class="tab-btn" data-tab="analytics">التحليلات</button>
+        <button class="tab-btn" data-tab="settings">الإعدادات</button>
+    </div>
+
+    <!-- TAB 1: SCRIPT GENERATION -->
+    <div id="generate" class="tab-content active">
+        <h2>توليد سكريبت يوتيوب</h2>
+        <p style="color: #6b7280; margin-bottom: 2rem; margin-top: 0.5rem;">اختر الموضوع والمدة والنمط المطلوب</p>
+
+        <div id="generate-alert-container"></div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>المادة</label>
+                <div class="custom-select" id="subject-select">
+                    <select id="subject">
+                        <option value="">اختر المادة...</option>
+                    </select>
+                    <div class="select-display">
+                        <span class="select-display-arrow">▼</span>
+                        <span class="select-display-text placeholder">اختر المادة</span>
+                    </div>
+                    <div class="select-dropdown hidden"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>الموضوع</label>
+                <div class="custom-select" id="topic-select">
+                    <select id="topic">
+                        <option value="">اختر الموضوع...</option>
+                    </select>
+                    <div class="select-display">
+                        <span class="select-display-arrow">▼</span>
+                        <span class="select-display-text placeholder">اختر الموضوع</span>
+                    </div>
+                    <div class="select-dropdown hidden"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>الموضوع الفرعي</label>
+                <div class="custom-select" id="subtopic-select">
+                    <select id="subtopic">
+                        <option value="">اختر الموضوع الفرعي...</option>
+                    </select>
+                    <div class="select-display">
+                        <span class="select-display-arrow">▼</span>
+                        <span class="select-display-text placeholder">اختر الموضوع الفرعي</span>
+                    </div>
+                    <div class="select-dropdown hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>المدة (دقيقة)</label>
+                <input type="number" id="duration" min="5" max="30" value="10" />
+            </div>
+
+            <div class="form-group">
+                <label>نمط الخطاف</label>
+                <div class="custom-select" id="hook-archetype-select">
+                    <select id="hook-archetype">
+                        <option value="teacher">نصيحة المعلم</option>
+                        <option value="relatable">تجربة مألوفة</option>
+                        <option value="question">سؤال محير</option>
+                        <option value="story">قصة واقعية</option>
+                        <option value="surprising">حقيقة مفاجئة</option>
+                        <option value="problem">مشكلة يومية</option>
+                    </select>
+                    <div class="select-display">
+                        <span class="select-display-arrow">▼</span>
+                        <span class="select-display-text">نصيحة المعلم</span>
+                    </div>
+                    <div class="select-dropdown hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button class="btn btn-primary" id="generate-btn">
+                ✨ توليد السكريبت
+            </button>
+            <button class="btn btn-secondary" id="generate-reset" style="display: none;">
+                🔄 إعادة تعيين
+            </button>
+        </div>
+
+        <div id="generate-output" style="margin-top: 2rem;"></div>
+    </div>
+
+    <!-- TAB 2: LONG-FORM VIDEO -->
+    <div id="long-form" class="tab-content">
+        <h2>فيديو تعليمي طويل</h2>
+        <p style="color: #6b7280; margin-bottom: 2rem; margin-top: 0.5rem;">توليد سكريبت لفيديو 1 ساعة أو 3 ساعات</p>
+
+        <div id="longform-alert-container"></div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>المادة</label>
+                <div class="custom-select" id="longform-subject-select">
+                    <select id="longform-subject">
+                        <option value="">اختر المادة...</option>
+                    </select>
+                    <div class="select-display">
+                        <span class="select-display-arrow">▼</span>
+                        <span class="select-display-text placeholder">اختر المادة</span>
+                    </div>
+                    <div class="select-dropdown hidden"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>الموضوع</label>
+                <div class="custom-select" id="longform-topic-select">
+                    <select id="longform-topic">
+                        <option value="">اختر الموضوع...</option>
+                    </select>
+                    <div class="select-display">
+                        <span class="select-display-arrow">▼</span>
+                        <span class="select-display-text placeholder">اختر الموضوع</span>
+                    </div>
+                    <div class="select-dropdown hidden"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>الموضوع الفرعي</label>
+                <div class="custom-select" id="longform-subtopic-select">
+                    <select id="longform-subtopic">
+                        <option value="">اختر الموضوع الفرعي...</option>
+                    </select>
+                    <div class="select-display">
+                        <span class="select-display-arrow">▼</span>
+                        <span class="select-display-text placeholder">اختر الموضوع الفرعي</span>
+                    </div>
+                    <div class="select-dropdown hidden"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>المدة</label>
+                <div class="custom-select" id="longform-duration-select">
+                    <select id="longform-duration">
+                        <option value="60">60 دقيقة</option>
+                        <option value="180">180 دقيقة</option>
+                    </select>
+                    <div class="select-display">
+                        <span class="select-display-arrow">▼</span>
+                        <span class="select-display-text">60 دقيقة</span>
+                    </div>
+                    <div class="select-dropdown hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" id="longform-btn">
+            🎬 توليد الفيديو الطويل
+        </button>
+
+        <div id="longform-output" style="margin-top: 2rem;"></div>
+    </div>
+
+    <!-- TAB 3: PODCAST OUTLINE -->
+    <div id="podcast" class="tab-content">
+        <h2>ملخص البودكاست</h2>
+        <p style="color: #6b7280; margin-bottom: 2rem; margin-top: 0.5rem;">إنشاء ملخص منظم لحلقة بودكاست</p>
+
+        <div id="podcast-alert-container"></div>
+
+        <div class="form-group full">
+            <label>ملف تعريف المضيف (JSON)</label>
+            <textarea id="podcast-host-profile" placeholder='{"name":"علي","years_exp":5,"style":"حواري"}'></textarea>
+        </div>
+
+        <div class="form-group full">
+            <label>ملف تعريف الضيف (JSON)</label>
+            <textarea id="podcast-guest-profile" placeholder='{"name":"سارة","expertise":"الفيزياء","background":"درست بالخارج"}'></textarea>
+        </div>
+
+        <div class="form-group full">
+            <label>سياق الحلقة</label>
+            <textarea id="podcast-context" placeholder="نقاش حول أحدث التطورات في التعليم الإلكتروني..."></textarea>
+        </div>
+
+        <button class="btn btn-primary" id="podcast-btn">
+            🎙️ توليد الملخص
+        </button>
+
+        <div id="podcast-output" style="margin-top: 2rem;"></div>
+    </div>
+
+    <!-- TAB 4: STUDY TIPS -->
+    <div id="study-tips" class="tab-content">
+        <h2>نصائح الدراسة (مجاني)</h2>
+        <p style="color: #6b7280; margin-bottom: 2rem; margin-top: 0.5rem;">توليد نصائح دراسية بدون الحاجة إلى المنهج</p>
+
+        <div id="study-tips-alert-container"></div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>الموضوع</label>
+                <input type="text" id="study-topic" placeholder="مثال: كيفية حل المعادلات التربيعية" />
+            </div>
+
+            <div class="form-group">
+                <label>المدة (دقيقة)</label>
+                <input type="number" id="study-duration" min="5" max="20" value="10" />
+            </div>
+
+            <div class="form-group">
+                <label>نمط الخطاف</label>
+                <div class="custom-select" id="study-hook-select">
+                    <select id="study-hook">
+                        <option value="teacher">نصيحة المعلم</option>
+                        <option value="relatable">تجربة مألوفة</option>
+                        <option value="question">سؤال محير</option>
+                        <option value="story">قصة واقعية</option>
+                        <option value="surprising">حقيقة مفاجئة</option>
+                        <option value="problem">مشكلة يومية</option>
+                    </select>
+                    <div class="select-display">
+                        <span class="select-display-arrow">▼</span>
+                        <span class="select-display-text">نصيحة المعلم</span>
+                    </div>
+                    <div class="select-dropdown hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" id="study-btn">
+            📚 توليد النصائح
+        </button>
+
+        <div id="study-output" style="margin-top: 2rem;"></div>
+    </div>
+
+    <!-- TAB 5: SAVED SCRIPTS -->
+    <div id="scripts" class="tab-content">
+        <h2>السكريبتات المحفوظة</h2>
+        <p style="color: #6b7280; margin-bottom: 2rem; margin-top: 0.5rem;">جميع السكريبتات التي تم توليدها</p>
+
+        <div id="scripts-list" class="empty-state">
+            <div class="empty-state-icon">📂</div>
+            <div class="empty-state-title">لا توجد سكريبتات محفوظة</div>
+            <div class="empty-state-text">ابدأ بتوليد سكريبت جديد من تبويب "توليد السكريبت"</div>
+        </div>
+    </div>
+
+    <!-- TAB 6: ANALYTICS -->
+    <div id="analytics" class="tab-content">
+        <h2>التحليلات والإحصائيات</h2>
+        <p style="color: #6b7280; margin-bottom: 2rem; margin-top: 0.5rem;">أداء السكريبتات والمقاييس الرئيسية</p>
+
+        <div id="analytics-content" class="empty-state">
+            <div class="empty-state-icon">📊</div>
+            <div class="empty-state-title">لا توجد بيانات تحليلية</div>
+            <div class="empty-state-text">بمجرد تحميل السكريبتات إلى YouTube، ستظهر الإحصائيات هنا</div>
+        </div>
+    </div>
+
+    <!-- TAB 7: SETTINGS -->
+    <div id="settings" class="tab-content">
+        <h2>الإعدادات</h2>
+
+        <div class="form-group full">
+            <label>مفتاح YouTube API</label>
+            <input type="text" id="youtube-api-key" placeholder="AIzaSyD..." />
+            <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">يمكنك الحصول على المفتاح من Google Cloud Console</p>
+        </div>
+
+        <button class="btn btn-primary" id="save-settings-btn">
+            💾 حفظ الإعدادات
+        </button>
+    </div>
+</div>
+
+<script>
+    // ===== CONFIG =====
+    const API_URL = '/api';
+    let currentTeacherId = null;
+    let authToken = localStorage.getItem('token');
+
+    // ===== INITIALIZATION =====
+    async function initDashboard() {
+        if (!authToken) {
+            window.location.href = '/';
+            return;
+        }
+
+        try {
+            // Load user info
+            const userRes = await fetch(`${API_URL}/auth/me`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+
+            if (!userRes.ok) {
+                localStorage.clear();
+                window.location.href = '/';
+                return;
+            }
+
+            const userData = await userRes.json();
+            currentTeacherId = userData.teacher_id;
+
+            // Update header
+            document.getElementById('teacher-name').textContent = userData.username || 'المعلم';
+            document.getElementById('teacher-role').textContent = userData.role === 'admin' ? 'مسؤول' : 'معلم';
+            const initial = userData.username?.charAt(0).toUpperCase() || 'ك';
+            document.getElementById('teacher-avatar').textContent = initial;
+
+            // Initialize custom selects
+            initCustomSelects();
+
+            // Load subjects for all tabs
+            await loadSubjects('subject');
+            await loadSubjects('longform-subject');
+
+            // Set up event listeners
+            setupEventListeners();
+
+            // Load saved scripts and analytics
+            loadScripts();
+            loadAnalytics();
+
+            // Restore YouTube API key from localStorage
+            const savedKey = localStorage.getItem('youtube_api_key');
+            if (savedKey) {
+                document.getElementById('youtube-api-key').value = savedKey;
+            }
+        } catch (err) {
+            console.error('Initialization error:', err);
+            showAlert('حدث خطأ في تحميل البيانات', 'error', 'generate-alert-container');
+        }
+    }
+
+    // ===== CUSTOM SELECT SYSTEM =====
+    function initCustomSelects() {
+        document.querySelectorAll('.custom-select').forEach(customSelect => {
+            const selectEl = customSelect.querySelector('select');
+            const display = customSelect.querySelector('.select-display');
+            const dropdown = customSelect.querySelector('.select-dropdown');
+
+            display.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = !dropdown.classList.contains('hidden');
+                document.querySelectorAll('.select-dropdown').forEach(d => d.classList.add('hidden'));
+                document.querySelectorAll('.select-display').forEach(d => d.classList.remove('active'));
+                if (!isOpen) {
+                    dropdown.classList.remove('hidden');
+                    display.classList.add('active');
+                }
+            });
+
+            selectEl.addEventListener('change', () => {
+                updateSelectDisplay(customSelect);
+                handleSelectChange(selectEl);
+            });
+        });
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.select-dropdown').forEach(d => d.classList.add('hidden'));
+            document.querySelectorAll('.select-display').forEach(d => d.classList.remove('active'));
+        });
+    }
+
+    function updateSelectDisplay(customSelect) {
+        const selectEl = customSelect.querySelector('select');
+        const display = customSelect.querySelector('.select-display-text');
+        const selectedOption = selectEl.options[selectEl.selectedIndex];
+        display.textContent = selectedOption.text;
+        display.classList.toggle('placeholder', !selectEl.value);
+    }
+
+    function populateSelect(selectId, options) {
+        const selectEl = document.getElementById(selectId);
+        const customSelect = selectEl.closest('.custom-select');
+        const dropdown = customSelect.querySelector('.select-dropdown');
+
+        selectEl.innerHTML = `<option value="">اختر...</option>`;
+        dropdown.innerHTML = '';
+
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt;
+            option.textContent = opt;
+            selectEl.appendChild(option);
+
+            const dropdownItem = document.createElement('div');
+            dropdownItem.className = 'select-option';
+            dropdownItem.textContent = opt;
+            dropdownItem.addEventListener('click', () => {
+                selectEl.value = opt;
+                selectEl.dispatchEvent(new Event('change'));
+                customSelect.querySelector('.select-display').click();
+            });
+            dropdown.appendChild(dropdownItem);
+        });
+
+        updateSelectDisplay(customSelect);
+    }
+
+    function handleSelectChange(selectEl) {
+        const id = selectEl.id;
+
+        if (id === 'subject') {
+            loadTopics('topic', selectEl.value);
+        } else if (id === 'topic') {
+            loadSubtopics('subtopic', document.getElementById('subject').value, selectEl.value);
+        } else if (id === 'longform-subject') {
+            loadTopics('longform-topic', selectEl.value);
+        } else if (id === 'longform-topic') {
+            loadSubtopics('longform-subtopic', document.getElementById('longform-subject').value, selectEl.value);
+        }
+    }
+
+    // ===== LOAD DROPDOWNS =====
+    async function loadSubjects(selectId) {
+        try {
+            const res = await fetch(`${API_URL}/subjects`);
+            const data = await res.json();
+            populateSelect(selectId, data.subjects);
+        } catch (err) {
+            console.error('Error loading subjects:', err);
+            showAlert(`خطأ في تحميل المواد: ${err.message}`, 'error');
+        }
+    }
+
+    async function loadTopics(topicSelectId, subject) {
+        try {
+            const res = await fetch(`${API_URL}/topics/${subject}`);
+            const data = await res.json();
+            populateSelect(topicSelectId, data.topics);
+            
+            // Clear subtopic when topic changes
+            const subtopicId = topicSelectId.replace('-topic', '-subtopic');
+            const subtopicEl = document.getElementById(subtopicId);
+            if (subtopicEl) {
+                subtopicEl.value = '';
+                updateSelectDisplay(subtopicEl.closest('.custom-select'));
+            }
+        } catch (err) {
+            console.error('Error loading topics:', err);
+            showAlert(`خطأ في تحميل الموضوعات: ${err.message}`, 'error');
+        }
+    }
+
+    async function loadSubtopics(subtopicSelectId, subject, topic) {
+        try {
+            const res = await fetch(`${API_URL}/subtopics/${subject}/${topic}`);
+            const data = await res.json();
+            populateSelect(subtopicSelectId, data.subtopics);
+        } catch (err) {
+            console.error('Error loading subtopics:', err);
+            showAlert(`خطأ في تحميل الموضوعات الفرعية: ${err.message}`, 'error');
+        }
+    }
+
+    // ===== GENERATION FUNCTIONS =====
+    async function generateScript() {
+        const subject = document.getElementById('subject').value;
+        const topic = document.getElementById('topic').value;
+        const subtopic = document.getElementById('subtopic').value;
+        const duration = document.getElementById('duration').value;
+        const hook = document.getElementById('hook-archetype').value;
+
+        if (!subject || !topic || !subtopic) {
+            showAlert('يرجى ملء جميع الحقول المطلوبة', 'error', 'generate-alert-container');
+            return;
+        }
+
+        const btn = document.getElementById('generate-btn');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ جاري التوليد...';
+        const output = document.getElementById('generate-output');
+        output.innerHTML = '<div class="loading"><div class="spinner"></div><p>جاري توليد السكريبت...</p></div>';
+
+        try {
+            const res = await fetch(`${API_URL}/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({
+                    subject,
+                    topic,
+                    subtopic,
+                    duration_minutes: parseInt(duration),
+                    hook_archetype: hook
+                })
+            });
+
+            const data = await res.json();
+
+            if (!data.success) {
+                showAlert(`خطأ: ${data.error}`, 'error', 'generate-alert-container');
+                output.innerHTML = '';
+                return;
+            }
+
+            displayScriptOutput(data);
+            showAlert('✅ تم توليد السكريبت بنجاح!', 'success', 'generate-alert-container');
+
+            // Refresh scripts list
+            loadScripts();
+        } catch (err) {
+            showAlert(`خطأ: ${err.message}`, 'error', 'generate-alert-container');
+            output.innerHTML = '';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '✨ توليد السكريبت';
+        }
+    }
+
+    async function generateLongForm() {
+        const subject = document.getElementById('longform-subject').value;
+        const topic = document.getElementById('longform-topic').value;
+        const subtopic = document.getElementById('longform-subtopic').value;
+        const duration = document.getElementById('longform-duration').value;
+
+        if (!subject || !topic || !subtopic) {
+            showAlert('يرجى ملء جميع الحقول المطلوبة', 'error', 'longform-alert-container');
+            return;
+        }
+
+        const btn = document.getElementById('longform-btn');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ جاري التوليد...';
+        const output = document.getElementById('longform-output');
+        output.innerHTML = '<div class="loading"><div class="spinner"></div><p>جاري توليد الفيديو الطويل (قد يستغرق عدة دقائق)...</p></div>';
+
+        try {
+            const res = await fetch(`${API_URL}/generate-long-form`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({
+                    subject,
+                    topic,
+                    subtopic,
+                    duration_minutes: parseInt(duration)
+                })
+            });
+
+            // Handle SSE streaming
+            if (res.body) {
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let fullOutput = '';
+
+                output.innerHTML = '<div class="streaming-indicator"><div class="streaming-dot"></div> جاري البث المباشر...</div>';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const text = decoder.decode(value);
+                    fullOutput += text;
+                    output.innerHTML = `<div class="output-section">${fullOutput.replace(/\n/g, '<br>')}</div>`;
+                }
+
+                showAlert('✅ تم توليد الفيديو الطويل بنجاح!', 'success', 'longform-alert-container');
+                loadScripts();
+            }
+        } catch (err) {
+            showAlert(`خطأ: ${err.message}`, 'error', 'longform-alert-container');
+            output.innerHTML = '';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '🎬 توليد الفيديو الطويل';
+        }
+    }
+
+    async function generatePodcast() {
+        const hostProfile = document.getElementById('podcast-host-profile').value.trim();
+        const guestProfile = document.getElementById('podcast-guest-profile').value.trim();
+        const context = document.getElementById('podcast-context').value.trim();
+
+        if (!hostProfile || !guestProfile || !context) {
+            showAlert('يرجى ملء جميع الحقول', 'error', 'podcast-alert-container');
+            return;
+        }
+
+        let hostObj, guestObj;
+        try {
+            hostObj = JSON.parse(hostProfile);
+            guestObj = JSON.parse(guestProfile);
+        } catch {
+            showAlert('صيغة JSON غير صحيحة', 'error', 'podcast-alert-container');
+            return;
+        }
+
+        const btn = document.getElementById('podcast-btn');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ جاري التوليد...';
+        const output = document.getElementById('podcast-output');
+        output.innerHTML = '<div class="loading"><div class="spinner"></div><p>جاري توليد الملخص...</p></div>';
+
+        try {
+            const res = await fetch(`${API_URL}/podcast/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({
+                    speaker_profile: hostObj,
+                    guest_profile: guestObj,
+                    episode_context: context
+                })
+            });
+
+            const data = await res.json();
+
+            if (!data.success) {
+                showAlert(`خطأ: ${data.error}`, 'error', 'podcast-alert-container');
+                output.innerHTML = '';
+                return;
+            }
+
+            output.innerHTML = `
+                <div class="output-section">
+                    <h3>${data.title}</h3>
+                    <pre style="white-space: pre-wrap; font-family: inherit;">${JSON.stringify(data.outline, null, 2)}</pre>
+                </div>
+            `;
+            showAlert('✅ تم توليد الملخص بنجاح!', 'success', 'podcast-alert-container');
+        } catch (err) {
+            showAlert(`خطأ: ${err.message}`, 'error', 'podcast-alert-container');
+            output.innerHTML = '';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '🎙️ توليد الملخص';
+        }
+    }
+
+    async function generateStudyTips() {
+        const topic = document.getElementById('study-topic').value.trim();
+        const duration = document.getElementById('study-duration').value;
+        const hook = document.getElementById('study-hook').value;
+
+        if (!topic) {
+            showAlert('يرجى إدخال الموضوع', 'error', 'study-tips-alert-container');
+            return;
+        }
+
+        const btn = document.getElementById('study-btn');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ جاري التوليد...';
+        const output = document.getElementById('study-output');
+        output.innerHTML = '<div class="loading"><div class="spinner"></div><p>جاري توليد النصائح...</p></div>';
+
+        try {
+            const res = await fetch(`${API_URL}/generate-study-tips`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    tip_topic: topic,
+                    duration_minutes: parseInt(duration),
+                    hook_archetype: hook
+                })
+            });
+
+            const data = await res.json();
+
+            if (!data.success) {
+                showAlert(`خطأ: ${data.error}`, 'error', 'study-tips-alert-container');
+                output.innerHTML = '';
+                return;
+            }
+
+            displayScriptOutput(data);
+            showAlert('✅ تم توليد النصائح بنجاح!', 'success', 'study-tips-alert-container');
+        } catch (err) {
+            showAlert(`خطأ: ${err.message}`, 'error', 'study-tips-alert-container');
+            output.innerHTML = '';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '📚 توليد النصائح';
+        }
+    }
+
+    // ===== DISPLAY OUTPUT =====
+    function displayScriptOutput(data) {
+        const output = document.getElementById('generate-output') || document.getElementById('study-output');
+        const pkg = data.youtube_package || data;
+
+        const html = `
+            <div class="output-section">
+                <div class="output-header">
+                    <div>
+                        <div class="output-title">${pkg.title}</div>
+                        <div class="output-meta">
+                            <div class="output-meta-item">
+                                <div class="output-meta-label">عدد الكلمات</div>
+                                <div class="output-meta-value">${data.word_count || 0}</div>
+                            </div>
+                            <div class="output-meta-item">
+                                <div class="output-meta-label">نوع الخطاف</div>
+                                <div class="output-meta-value">${pkg.hook_archetype}</div>
+                            </div>
+                            ${data.is_duplicate ? '<div class="output-meta-item"><div class="output-meta-label">⚠️ محتوى مشابه</div></div>' : ''}
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">🎯 الخطاف</h3>
+                <p style="background: #fef3c7; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">"${pkg.hook}"</p>
+
+                <h3 style="margin: 1.5rem 0 0.75rem;">📝 السكريبت</h3>
+                <div style="background: #f9fafb; padding: 1.5rem; border-radius: 0.75rem; line-height: 1.8; text-align: justify;">
+                    ${pkg.script.replace(/\n/g, '<br><br>')}
+                </div>
+
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="downloadDocx('${data.script_id || 'temp'}')">
+                        📥 تحميل DOCX
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyToClipboard('${pkg.script.replace(/'/g, "\\'").replace(/"/g, '\\"')}')">
+                        📋 نسخ السكريبت
+                    </button>
+                </div>
+            </div>
+        `;
+
+        output.innerHTML = html;
+    }
+
+    // ===== LOAD SCRIPTS & ANALYTICS =====
+    async function loadScripts() {
+        if (!currentTeacherId) return;
+
+        try {
+            const res = await fetch(`${API_URL}/scripts/${currentTeacherId}`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+
+            const data = await res.json();
+
+            if (!data.scripts || data.scripts.length === 0) {
+                document.getElementById('scripts-list').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📂</div>
+                        <div class="empty-state-title">لا توجد سكريبتات محفوظة</div>
+                        <div class="empty-state-text">ابدأ بتوليد سكريبت جديد</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = data.scripts.map(script => `
+                <div class="script-item">
+                    <div class="script-item-header">
+                        <div class="script-item-title">${script.title}</div>
+                    </div>
+                    <div class="script-item-meta">
+                        <span>📚 ${script.subject}</span>
+                        <span>🏷️ ${script.topic}</span>
+                        <span>📊 ${script.word_count || 0} كلمة</span>
+                        <span>📅 ${new Date(script.created_at).toLocaleDateString('ar-EG')}</span>
+                    </div>
+                    <div class="script-actions">
+                        <button class="btn btn-secondary" onclick="downloadDocx('${script.id}')">
+                            📥 تحميل
+                        </button>
+                        <button class="btn btn-secondary" onclick="copyToClipboard('${script.script.replace(/'/g, "\\'").replace(/"/g, '\\"')}')">
+                            📋 نسخ
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('scripts-list').innerHTML = html;
+        } catch (err) {
+            console.error('Error loading scripts:', err);
+        }
+    }
+
+    async function loadAnalytics() {
+        if (!currentTeacherId) return;
+
+        try {
+            const res = await fetch(`${API_URL}/analytics/${currentTeacherId}`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+
+            const data = await res.json();
+
+            if (!data.success || !data.data) {
+                document.getElementById('analytics-content').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <div class="empty-state-title">لا توجد بيانات تحليلية</div>
+                        <div class="empty-state-text">بمجرد تحميل السكريبتات إلى YouTube، ستظهر الإحصائيات هنا</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const stats = data.data;
+            const html = `
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-title">📊 إجمالي السكريبتات</div>
+                        <div class="card-value">${stats.total_scripts}</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">👁️ متوسط المشاهدات</div>
+                        <div class="card-value">${stats.avg_views || 0}</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">💬 متوسط الانخراط</div>
+                        <div class="card-value">${(stats.avg_engagement || 0).toFixed(1)}%</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">⭐ متوسط الدرجة</div>
+                        <div class="card-value">${(stats.avg_weighted_score || 0).toFixed(1)}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('analytics-content').innerHTML = html;
+        } catch (err) {
+            console.error('Error loading analytics:', err);
+        }
+    }
+
+    // ===== TAB SWITCHING =====
+    function setupTabSwitching() {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+
+                // Hide all tabs
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                // Deactivate all buttons
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+
+                // Show selected tab
+                document.getElementById(tabId).classList.add('active');
+                btn.classList.add('active');
+
+                // Reinitialize custom selects for active tab
+                initCustomSelects();
+            });
+        });
+    }
+
+    // ===== UTILITY FUNCTIONS =====
+    function showAlert(message, type = 'success', containerId = 'generate-alert-container') {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const alert = document.createElement('div');
+        alert.className = `alert ${type}`;
+        alert.textContent = message;
+
+        container.innerHTML = '';
+        container.appendChild(alert);
+
+        setTimeout(() => alert.remove(), 5000);
+    }
+
+    function downloadDocx(scriptId) {
+        window.location.href = `${API_URL}/export/${scriptId}`;
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showAlert('✅ تم النسخ إلى الحافظة!', 'success');
+        }).catch(() => {
+            showAlert('فشل النسخ', 'error');
+        });
+    }
+
+    // ===== EVENT LISTENERS =====
+    function setupEventListeners() {
+        document.getElementById('generate-btn').addEventListener('click', generateScript);
+        document.getElementById('longform-btn').addEventListener('click', generateLongForm);
+        document.getElementById('podcast-btn').addEventListener('click', generatePodcast);
+        document.getElementById('study-btn').addEventListener('click', generateStudyTips);
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = '/';
+        });
+
+        document.getElementById('save-settings-btn').addEventListener('click', () => {
+            const key = document.getElementById('youtube-api-key').value.trim();
+            if (key) {
+                localStorage.setItem('youtube_api_key', key);
+                showAlert('✅ تم حفظ الإعدادات', 'success');
+            }
+        });
+
+        setupTabSwitching();
+    }
+
+    // ===== START =====
+    initDashboard();
+</script>
+
+</body>
+</html>

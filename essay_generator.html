@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essay Generator — Premium Feature</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            margin-bottom: 40px;
+            padding: 30px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .panel h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .label-hint {
+            font-size: 12px;
+            font-weight: 400;
+            color: #888;
+            margin-left: 6px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #333;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        textarea.framing-input {
+            font-family: inherit;
+            font-size: 14px;
+            min-height: 80px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input { display: none; }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+            border: 2px dashed #d0d0d0;
+            border-radius: 6px;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload-label:hover,
+        .file-upload-label.active {
+            border-color: #333;
+            background: #f0f0f0;
+        }
+
+        .file-upload-text { text-align: center; }
+
+        .file-upload-text p {
+            font-size: 13px;
+            color: #666;
+            margin: 3px 0;
+        }
+
+        .file-name {
+            margin-top: 8px;
+            padding: 8px 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            display: none;
+        }
+
+        .file-name.active { display: block; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-generate {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .btn-generate:hover:not(:disabled) { background: #333; }
+
+        .btn-generate:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-clear {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #d0d0d0;
+        }
+
+        .btn-clear:hover { background: #e0e0e0; }
+
+        /* Progress Panel */
+        .progress-panel { display: none; }
+        .progress-panel.active { display: block; }
+
+        .progress-item { margin-bottom: 15px; }
+
+        .progress-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #1a1a1a;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .status-message {
+            font-size: 13px;
+            color: #555;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Monaco', monospace;
+            line-height: 1.5;
+        }
+
+        /* Results */
+        .results-section { display: none; }
+
+        .essay-meta {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 14px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .meta-item { font-size: 13px; }
+
+        .meta-label {
+            font-weight: 600;
+            color: #888;
+            margin-bottom: 3px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-value { color: #1a1a1a; font-size: 14px; }
+
+        .export-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .btn-export {
+            flex: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #d0d0d0;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .btn-export:hover { background: #e8e8e8; border-color: #bbb; }
+
+        .btn-export.primary {
+            background: #1a1a1a;
+            color: white;
+            border-color: #1a1a1a;
+        }
+
+        .btn-export.primary:hover { background: #333; }
+
+        /* Essay Display */
+        .essay-display-wrapper {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .essay-display-wrapper.active { display: block; }
+
+        .essay-body {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 40px 48px;
+            line-height: 1.8;
+            max-height: 70vh;
+            overflow-y: auto;
+            font-size: 15px;
+        }
+
+        .essay-body h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #111;
+            line-height: 1.3;
+        }
+
+        .essay-body .essay-byline {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 36px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .essay-body h2 {
+            font-size: 19px;
+            font-weight: 600;
+            margin-top: 36px;
+            margin-bottom: 14px;
+            color: #1a1a1a;
+        }
+
+        .essay-body p {
+            margin-bottom: 16px;
+            color: #2a2a2a;
+        }
+
+        .essay-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .essay-panel-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Error */
+        .error-message {
+            padding: 12px;
+            background: #fee;
+            border: 1px solid #fcc;
+            border-radius: 4px;
+            color: #c00;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Essay Generator</h1>
+            <p>Professional English essays from your source material</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Left Panel: Input -->
+            <div class="panel">
+                <h2>Create Essay</h2>
+
+                <div class="error-message" id="errorMessage"></div>
+
+                <div class="form-group">
+                    <label for="essayTitle">Essay Title *</label>
+                    <input type="text" id="essayTitle" placeholder="e.g., The Hidden Cost of Iraq's Informal Economy">
+                </div>
+
+                <div class="form-group">
+                    <label>Source Material *</label>
+                    <div class="file-upload">
+                        <input type="file" id="sourceFile" class="file-input" accept=".md,.txt,.text">
+                        <label for="sourceFile" class="file-upload-label" id="fileLabel">
+                            <div class="file-upload-text">
+                                <p><strong>Click to upload</strong> or drag & drop</p>
+                                <p style="font-size: 12px;">MD or TXT files</p>
+                            </div>
+                        </label>
+                        <div class="file-name" id="fileName"></div>
+                    </div>
+                    <textarea id="sourceText" placeholder="Or paste your source material here..." style="margin-top:10px;"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="essayType">Essay Type *</label>
+                        <select id="essayType">
+                            <option value="short">Short (5,000 words)</option>
+                            <option value="medium" selected>Medium (12,000 words)</option>
+                            <option value="long">Long (30,000 words)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="essayTone">Tone *</label>
+                        <select id="essayTone">
+                            <option value="academic" selected>Academic</option>
+                            <option value="journalistic">Journalistic</option>
+                            <option value="persuasive">Persuasive</option>
+                            <option value="narrative">Narrative</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="targetAudience">
+                        Audience & Framing Instructions
+                        <span class="label-hint">How should Claude frame the essay?</span>
+                    </label>
+                    <textarea
+                        id="targetAudience"
+                        class="framing-input"
+                        placeholder="e.g., Iraqi university students skeptical of Western economic models — use local examples, acknowledge historical grievances, and frame global concepts through an Iraqi lens."
+                    ></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-generate" id="generateBtn" onclick="generateEssay()">Generate Essay</button>
+                    <button class="btn-clear" onclick="clearForm()">Clear</button>
+                </div>
+            </div>
+
+            <!-- Right Panel: Progress & Results -->
+            <div class="panel">
+                <h2>Progress</h2>
+
+                <div class="progress-panel" id="progressPanel">
+                    <div class="progress-item">
+                        <div class="progress-label">Generation Progress</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                    <div class="status-message" id="statusMessage"></div>
+                    <button class="btn-clear" onclick="cancelGeneration()" style="width:100%;">Cancel</button>
+                </div>
+
+                <!-- Results meta + export -->
+                <div class="results-section" id="resultsSection">
+                    <div class="essay-meta" id="essayMeta"></div>
+                    <div class="export-bar">
+                        <button class="btn-export primary" onclick="exportEssay('docx')">⬇ Download DOCX</button>
+                        <button class="btn-export" onclick="exportEssay('md')">⬇ Download Markdown</button>
+                    </div>
+                    <p style="font-size:13px; color:#666;">Full essay preview below ↓</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Essay Display -->
+        <div class="essay-display-wrapper" id="essayDisplayWrapper">
+            <div class="panel">
+                <div class="essay-panel-header">
+                    <h2>Essay Preview</h2>
+                    <button class="btn-export primary" onclick="exportEssay('docx')" style="flex:none;">⬇ Download DOCX</button>
+                </div>
+                <div class="essay-body" id="essayBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://kaplen.app';
+        let currentEssayId = null;
+        let generateAborted = false;
+
+        // File upload
+        document.getElementById('sourceFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    document.getElementById('sourceText').value = event.target.result;
+                    document.getElementById('fileName').textContent = `✓ ${file.name}`;
+                    document.getElementById('fileName').classList.add('active');
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Drag and drop
+        const fileLabel = document.getElementById('fileLabel');
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => {
+            fileLabel.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); });
+        });
+        ['dragenter', 'dragover'].forEach(e => fileLabel.addEventListener(e, () => fileLabel.classList.add('active')));
+        ['dragleave', 'drop'].forEach(e => fileLabel.addEventListener(e, () => fileLabel.classList.remove('active')));
+
+        fileLabel.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            document.getElementById('sourceFile').files = files;
+            if (files[0]) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    document.getElementById('sourceText').value = ev.target.result;
+                    document.getElementById('fileName').textContent = `✓ ${files[0].name}`;
+                    document.getElementById('fileName').classList.add('active');
+                };
+                reader.readAsText(files[0]);
+            }
+        });
+
+        async function generateEssay() {
+            const title = document.getElementById('essayTitle').value.trim();
+            const source = document.getElementById('sourceText').value.trim();
+            const essayType = document.getElementById('essayType').value;
+            const tone = document.getElementById('essayTone').value;
+            const audience = document.getElementById('targetAudience').value.trim() || 'educated general reader';
+
+            if (!title) { showError('Please enter an essay title'); return; }
+            if (!source) { showError('Please upload or paste source material'); return; }
+
+            clearError();
+            generateAborted = false;
+            currentEssayId = null;
+
+            document.getElementById('progressPanel').classList.add('active');
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('essayDisplayWrapper').classList.remove('active');
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('statusMessage').innerHTML = '';
+            document.getElementById('progressFill').style.width = '0%';
+
+            try {
+                const response = await fetch(`${API_URL}/api/essay/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title,
+                        source_material: source,
+                        essay_type: essayType,
+                        tone,
+                        target_audience: audience,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Generation failed');
+                }
+
+                // SSE parsing
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop();
+
+                    let i = 0;
+                    while (i < lines.length) {
+                        const line = lines[i];
+                        if (line.startsWith('event: ')) {
+                            const eventType = line.substring(7).trim();
+                            i++;
+                            if (i < lines.length && lines[i].startsWith('data: ')) {
+                                try {
+                                    const data = JSON.parse(lines[i].substring(6));
+                                    handleEvent(eventType, data);
+                                } catch (_) {}
+                            }
+                        }
+                        i++;
+                    }
+                }
+
+            } catch (error) {
+                showError(`Generation error: ${error.message}`);
+                document.getElementById('progressPanel').classList.remove('active');
+            } finally {
+                document.getElementById('generateBtn').disabled = false;
+            }
+        }
+
+        function handleEvent(eventType, data) {
+            if (generateAborted) return;
+            const statusEl = document.getElementById('statusMessage');
+
+            switch (eventType) {
+                case 'analysis':
+                    appendStatus(`📊 ${data.message}`);
+                    updateProgress(5);
+                    break;
+                case 'analysis_complete':
+                    appendStatus(`✓ ${data.message}`);
+                    updateProgress(10);
+                    break;
+                case 'outline':
+                    appendStatus(`📋 Generating outline...`);
+                    updateProgress(15);
+                    break;
+                case 'outline_complete':
+                    appendStatus(`✓ ${data.message}`);
+                    updateProgress(20);
+                    break;
+                case 'generation':
+                    appendStatus(`✏️ ${data.message}`);
+                    break;
+                case 'section_start':
+                    appendStatus(`→ ${data.message}`);
+                    break;
+                case 'section_stream':
+                    // Streaming text — just nudge progress bar
+                    nudgeProgress();
+                    break;
+                case 'section_complete':
+                    appendStatus(`✓ ${data.message}`);
+                    break;
+                case 'assembly_complete':
+                    appendStatus(`🎯 Assembly complete: ${data.message}`);
+                    updateProgress(95);
+                    break;
+                case 'validation':
+                    appendStatus(`🔍 Validating...`);
+                    break;
+                case 'complete':
+                    updateProgress(100);
+                    displayResults(data);
+                    break;
+            }
+        }
+
+        let progressVal = 0;
+
+        function updateProgress(pct) {
+            progressVal = pct;
+            document.getElementById('progressFill').style.width = Math.min(pct, 99) + '%';
+        }
+
+        function nudgeProgress() {
+            if (progressVal < 90) {
+                progressVal = Math.min(progressVal + 0.2, 90);
+                document.getElementById('progressFill').style.width = progressVal + '%';
+            }
+        }
+
+        function appendStatus(msg) {
+            const el = document.getElementById('statusMessage');
+            el.innerHTML += `<div>${msg}</div>`;
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function displayResults(result) {
+            if (!result.success) {
+                showError('Essay generation failed');
+                return;
+            }
+
+            currentEssayId = result.essay_id;
+
+            // Meta strip
+            document.getElementById('essayMeta').innerHTML = `
+                <div class="meta-item">
+                    <div class="meta-label">Type</div>
+                    <div class="meta-value">${capitalize(result.essay_type)}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Tone</div>
+                    <div class="meta-value">${capitalize(result.tone)}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Words</div>
+                    <div class="meta-value">${(result.final_word_count || 0).toLocaleString()}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Generated</div>
+                    <div class="meta-value">${result.generated_at ? new Date(result.generated_at).toLocaleDateString() : 'Just now'}</div>
+                </div>
+            `;
+
+            document.getElementById('resultsSection').style.display = 'block';
+
+            // Render essay body as formatted HTML
+            renderEssay(result.title, result.full_essay, result.tone, result.target_audience);
+
+            appendStatus(`✅ Done — ${(result.final_word_count || 0).toLocaleString()} words`);
+        }
+
+        function renderEssay(title, markdown, tone, audience) {
+            // Convert markdown to readable HTML (basic)
+            let html = markdown
+                .replace(/^# .+\n?/m, '')          // strip the # title (we render it separately)
+                .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .split('\n\n')
+                .map(p => p.trim())
+                .filter(p => p.length > 0 && !p.startsWith('<h2'))
+                .map(p => p.startsWith('<h2') ? p : `<p>${p.replace(/\n/g, ' ')}</p>`)
+                .join('\n');
+
+            // Re-run heading pass on the already-split content
+            html = markdown
+                .replace(/^# .+\n?/m, '')
+                .replace(/^## (.+)$/gm, '\n__H2__$1__/H2__\n')
+                .split(/\n\n+/)
+                .map(block => {
+                    block = block.trim();
+                    if (!block) return '';
+                    if (block.startsWith('__H2__')) {
+                        return '<h2>' + block.replace('__H2__', '').replace('__/H2__', '') + '</h2>';
+                    }
+                    return '<p>' + block.replace(/\n/g, ' ') + '</p>';
+                })
+                .join('\n');
+
+            document.getElementById('essayBody').innerHTML = `
+                <h1>${title}</h1>
+                <div class="essay-byline">
+                    ${capitalize(tone)} · Framed for: ${audience}
+                </div>
+                ${html}
+            `;
+
+            document.getElementById('essayDisplayWrapper').classList.add('active');
+            document.getElementById('essayDisplayWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function exportEssay(format) {
+            if (!currentEssayId) {
+                showError('No essay to export. Generate one first.');
+                return;
+            }
+            const token = localStorage.getItem('token');
+            // DOCX export via direct link with auth token in query param
+            // (server must accept ?token= or use cookie — adjust if your auth differs)
+            window.location.href = `${API_URL}/api/essay/${currentEssayId}/export?format=${format}&token=${token}`;
+        }
+
+        function cancelGeneration() {
+            generateAborted = true;
+            document.getElementById('progressPanel').classList.remove('active');
+            showError('Generation cancelled');
+            document.getElementById('generateBtn').disabled = false;
+        }
+
+        function clearForm() {
+            document.getElementById('essayTitle').value = '';
+            document.getElementById('sourceText').value = '';
+            document.getElementById('sourceFile').value = '';
+            document.getElementById('fileName').classList.remove('active');
+            document.getElementById('targetAudience').value = '';
+            document.getElementById('essayType').value = 'medium';
+            document.getElementById('essayTone').value = 'academic';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('essayDisplayWrapper').classList.remove('active');
+            document.getElementById('progressPanel').classList.remove('active');
+            progressVal = 0;
+            clearError();
+        }
+
+        function showError(message) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = message;
+            el.classList.add('active');
+        }
+
+        function clearError() {
+            const el = document.getElementById('errorMessage');
+            el.textContent = '';
+            el.classList.remove('active');
+        }
+
+        function capitalize(str) {
+            return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+        }
+    </script>
+</body>
+</html>
